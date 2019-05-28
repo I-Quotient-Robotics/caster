@@ -1,31 +1,32 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="port" default="$(optenv HUSKY_PORT /dev/boller_base)" />
+  <arg name="port" default="$(optenv HUSKY_PORT /dev/boller_base)" />
 
-    <!-- Husky harware driver -->
-    <node pkg="boller_base" type="boller_base_node" name="boller_base_node" output="screen">
-        <rosparam subst_value="true">
-            port: $(arg port)
+  <!-- Husky harware driver -->
+  <node pkg="boller_base" type="boller_base_node" name="boller_base_node" output="screen">
+    <rosparam subst_value="true">
+      port: $(arg port)
 
-            control_frequency: 10.0
-            diagnostic_frequency: 1.0
+      control_frequency: 10.0
+      diagnostic_frequency: 1.0
 
-            max_acceleration: 3.0
-            max_speed: 1.0
-            wheel_diameter: 0.3302
-            polling_timeout: 10.0
-        </rosparam>
-        <remap from="boller_velocity_controller/cmd_vel" to="key_vel"/>
-        <remap from="boller_velocity_controller/odom" to="odom"/>
-    </node>
+      max_acceleration: 3.0
+      max_speed: 1.0
+      wheel_diameter: 0.1
+      polling_timeout: 10.0
+    </rosparam>
+    <remap from="boller_velocity_controller/cmd_vel" to="key_vel"/>
+    <remap from="boller_velocity_controller/odom" to="odom"/>
+  </node>
 
-<!--     <node pkg="turtlesim" type="turtle_teleop_key" name="turtle_teleop_key">
-        <remap from="turtle1/cmd_vel" to="cmd_vel"/>
-    </node> -->
+  <!--     <node pkg="turtlesim" type="turtle_teleop_key" name="turtle_teleop_key">
+  <remap from="turtle1/cmd_vel" to="cmd_vel"/>
+  </node> -->
 
-    <!-- Differential controller parameters and basic localization -->
-    <include file="$(find boller_control)/launch/control.launch" />
+  <!-- Differential controller parameters and basic localization -->
+  <include file="$(find boller_control)/launch/control.launch" />
 
-    <!--Teleop -->
-    <!-- <include file="$(find boller_control)/launch/teleop.launch" /> -->
+  <!--Teleop -->
+  <!-- <include file="$(find boller_control)/launch/teleop.launch" /> -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find boller_description)/rviz/view.rviz" />
 </launch>
