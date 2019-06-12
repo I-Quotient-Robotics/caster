@@ -5,23 +5,24 @@
 #include <math.h>
 
 const uint8_t LEFT = 0, RIGHT = 1;
+const uint16_t kCanOpenHeader = 0x600;
 
 /**
 * Initialize Boller hardware
 */
-IQR::BollerHardware::BollerHardware(ros::NodeHandle nh) {
+iqr::BollerHardware::BollerHardware(ros::NodeHandle nh) {
   nh_ = nh;
-  nh_.param<double>("max_accel", max_accel_, 5.0);
-  nh_.param<double>("max_speed", max_speed_, 1.0);
-  nh_.param<double>("wheel_diameter", wheel_diameter_, 0.003302);
-  nh_.param<double>("polling_timeout_", polling_timeout_, 10.0);
+  // nh_.param<double>("max_accel", max_accel_, 5.0);
+  // nh_.param<double>("max_speed", max_speed_, 1.0);
+  // nh_.param<double>("wheel_diameter", wheel_diameter_, 0.003302);
+  // nh_.param<double>("polling_timeout_", polling_timeout_, 10.0);
   nh_.param<int>("port", port_, 20001);
   nh_.param<std::string>("address", address_, "192.168.0.7");
 
-  registerControlInterfaces();
+  RegisterControlInterfaces();
 }
 
-bool IQR::BollerHardware::Connect() {
+bool iqr::BollerHardware::Connect() {
   socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if(socket_fd_ == -1) {
     ROS_INFO("%s\n", strerror(errno));
@@ -48,7 +49,7 @@ bool IQR::BollerHardware::Connect() {
   return true;
 }
 
-bool IQR:: BollerHardware::RequestUpdate(uint8_t can_id) {
+bool iqr::BollerHardware::RequestUpdate(uint8_t can_id) {
   uint8_t buf[13];
   bzero(buf, 13);
   buf[0] = 0x01;
@@ -65,7 +66,6 @@ bool IQR:: BollerHardware::RequestUpdate(uint8_t can_id) {
   buf[11] = 0x07;
   buf[12] = 0x08;
 
-
   // ROS_INFO("Sending request");
   if(send(socket_fd_, buf, 13, 0) == -1) {
     // ROS_INFO("sending error1");
@@ -77,7 +77,11 @@ bool IQR:: BollerHardware::RequestUpdate(uint8_t can_id) {
   return true;
 }
 
-void IQR::BollerHardware::UpdateData() {
+
+/**
+* Pull latest speed and travel measurements from driver, and store in joint structure for ros_control
+*/
+void iqr::BollerHardware::UpdateJointsFromHardware() {
   uint8_t buf[100];
   int received_bytes = 0, can_id;
   bzero(buf, 100);
@@ -126,7 +130,6 @@ void IQR::BollerHardware::UpdateData() {
         }
       }
     }
-    // ROS_INFO("06 loop");
   }
 
   while(true) {
@@ -170,20 +173,20 @@ void IQR::BollerHardware::UpdateData() {
     // ROS_INFO("05 loop");
   }
 
-  ROS_INFO("position: %f, %f; velocity: %f, %f" , joints_[0].position, joints_[1].position, joints_[0].velocity, joints_[1].velocity);
+  // ROS_INFO("position: %f, %f; velocity: %f, %f" , joints_[0].position, joints_[1].position, joints_[0].velocity, joints_[1].velocity);
 }
 
 /**
 * Get current encoder travel offsets from MCU and bias future encoder readings against them
 */
-void IQR::BollerHardware::resetTravelOffset() {
+void iqr::BollerHardware::ResetTravelOffset() {
 
 }
 
 /**
 * Register interfaces with the RobotHW interface manager, allowing ros_control operation
 */
-void IQR::BollerHardware::registerControlInterfaces() {
+void iqr::BollerHardware::RegisterControlInterfaces() {
   ros::V_string joint_names = boost::assign::list_of("front_left_wheel")
     ("front_right_wheel")("rear_left_wheel")("rear_right_wheel");
 
@@ -199,92 +202,65 @@ void IQR::BollerHardware::registerControlInterfaces() {
   registerInterface(&velocity_joint_interface_);
 }
 
-
-/**
-* Pull latest speed and travel measurements from MCU, and store in joint structure for ros_control
-*/
-void IQR::BollerHardware::updateJointsFromHardware() {
-
-  ROS_DEBUG_STREAM("Received travel information (L:" << 0.003 << " R:" << 0.003 << ")");
-  for (int i = 0; i < 4; i++) {
-    double delta = 0.003;
-
-    // detect suspiciously large readings, possibly from encoder rollover
-    if (std::abs(delta) < 1.0) {
-      joints_[i].position += delta;
-    } else {
-      // suspicious! drop this measurement and update the offset for subsequent readings
-      joints_[i].position_offset += delta;
-      ROS_DEBUG("Dropping overflow measurement from encoder");
-    }
-  }
-
-  ROS_DEBUG_STREAM("Received linear speed information (L:" << 0.003 << " R:" << 0.003 << ")");
-  for (int i = 0; i < 4; i++) {
-    if (i % 2 == LEFT) {
-      joints_[i].velocity = linearToAngular(0.003);
-    }
-    else { // assume RIGHT
-      joints_[i].velocity = linearToAngular(0.003);
-    }
-  }
-}
-
 /**
 * Get latest velocity commands from ros_control via joint structure, and send to MCU
 */
-void IQR::BollerHardware::writeCommandsToHardware() {
-  // double diff_speed_left = angularToLinear(joints_[LEFT].velocity_command);
-  // double diff_speed_right = angularToLinear(joints_[RIGHT].velocity_command);
+// void iqr::BollerHardware::WriteCommandsToHardware() {
+//   // ROS_INFO("command: %f, %f", joints_[0].velocity_command, joints_[1].velocity_command);
 
-  // limitDifferentialSpeed(diff_speed_left, diff_speed_right);
+//   uint8_t buf[13];
+//   bzero(buf, 13);
+//   buf[0] = 0x08;
+//   buf[1] = 0x00;
+//   buf[2] = 0x00;
+//   buf[3] = 0x00;
+//   buf[4] = 0x09;
 
-  // horizon_legacy::controlSpeed(diff_speed_left, diff_speed_right, max_accel_, max_accel_);
-  // ROS_INFO("command: %f, %f", joints_[0].velocity_command, joints_[1].velocity_command);
+//   int16_t speed = static_cast<int16_t>(joints_[0].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
+//   int16_t s_v = ntohl(speed);
+//   memcpy(buf+5, &s_v, 4);
 
+//   speed = static_cast<int>(joints_[1].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
+//   s_v = ntohl(speed);
+//   memcpy(buf+9, &s_v, 4);
+
+//   if(send(socket_fd_, buf, 13, 0) == -1) {
+//     // ROS_INFO("sending error1");
+//   }
+// }
+
+void iqr::BollerHardware::WriteCommandsToHardware() {
+  int32_t speed[2];
+
+  speed[0] = static_cast<int32_t>(joints_[0].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
+  // int16_t s_v = ntohl(speed);
+  // memcpy(buf+5, &s_v, 4);
+  SendCanOpenData(1, kCommand, kSetVelocity, 1, static_cast<uint32_t>(speed[0]), 4);
+
+  speed[1] = static_cast<int32_t>(joints_[1].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
+  // s_v = ntohl(speed);
+  // memcpy(buf+9, &s_v, 4);
+  SendCanOpenData(1, kCommand, kSetVelocity, 2, static_cast<uint32_t>(speed[1]), 4);
+
+  ROS_INFO("command: %f, %f; rad: %d, %d", joints_[0].velocity_command, joints_[1].velocity_command, speed[0], speed[1]);
+}
+
+
+void iqr::BollerHardware::SendCanOpenData(uint32_t node_id, RoboteqClientCommandType type, RoboteqCanOpenObjectDictionary index, uint8_t sub_index, uint32_t data, uint8_t data_length) {
   uint8_t buf[13];
   bzero(buf, 13);
+
+  uint32_t canopen_id = kCanOpenHeader + node_id;
+
   buf[0] = 0x08;
-  buf[1] = 0x00;
-  buf[2] = 0x00;
-  buf[3] = 0x00;
-  buf[4] = 0x09;
-
-  int speed = static_cast<int>(joints_[0].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
-  int s_v = ntohl(speed);
-  memcpy(buf+5, &s_v, 4);
-
-  speed = static_cast<int>(joints_[1].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
-  s_v = ntohl(speed);
-  memcpy(buf+9, &s_v, 4);
+  uint32_t d = ntohl(canopen_id);
+  memcpy(buf+1, &d, 4);
+  buf[5] = (type<<4) + ((4-data_length) << 2);
+  memcpy(buf+6, &index, 2);
+  memcpy(buf+8, &sub_index, 1);
+  memcpy(buf+9, &data, data_length);
 
   if(send(socket_fd_, buf, 13, 0) == -1) {
-    // ROS_INFO("sending error1");
+    ROS_INFO("canopen send error");
   }
-}
-
-/**
-* Scale left and right speed outputs to maintain ros_control's desired trajectory without saturating the outputs
-*/
-void IQR::BollerHardware::limitDifferentialSpeed(double &diff_speed_left, double &diff_speed_right) {
-  double large_speed = std::max(std::abs(diff_speed_left), std::abs(diff_speed_right));
-
-  if (large_speed > max_speed_) {
-    diff_speed_left *= max_speed_ / large_speed;
-    diff_speed_right *= max_speed_ / large_speed;
-  }
-}
-
-/**
-* Boller reports travel in metres, need radians for ros_control RobotHW
-*/
-double IQR::BollerHardware::linearToAngular(const double &travel) const {
-  return travel / wheel_diameter_ * 2;
-}
-
-/**
-* RobotHW provides velocity command in rad/s, Boller needs m/s,
-*/
-double IQR::BollerHardware::angularToLinear(const double &angle) const {
-  return angle * wheel_diameter_ / 2;
 }
