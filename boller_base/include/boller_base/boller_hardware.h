@@ -37,13 +37,21 @@ namespace iqr {
 */
 class BollerHardware : public hardware_interface::RobotHW {
   public:
-    BollerHardware(ros::NodeHandle nh);
+    BollerHardware();
 
+    void Initialize(std::string node_name, std::string address, int port, uint32_t can_id);
+
+    void UpdateHardwareStatus();
     void UpdateJointsFromHardware();
     void WriteCommandsToHardware();
 
     bool RequestUpdate(uint8_t can_id);
     bool Connect();
+
+    enum MotorIndex {
+      kLeftMotor = 0x01,
+      kRightMotor = 0x02, 
+    };
 
     enum RoboteqClientCommandType {
       kCommand = 0x02,
@@ -56,16 +64,20 @@ class BollerHardware : public hardware_interface::RobotHW {
 
       /* runtime queries */
       kReadAbsBLCounter = 0x2105,
-      kReadBLMotorRPM = 0x210A
+      kReadBLMotorRPM = 0x210A,
+      kReadStatusFlags = 0x2111,
+      kReadFaultFlags = 0x2112
     };
 
   private:
     void ResetTravelOffset();
     void RegisterControlInterfaces();
 
+    bool Command(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint32_t data, uint8_t data_length);
+    bool Query(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint8_t data_length, uint32_t *data_received);
     void SendCanOpenData(uint32_t node_id, RoboteqClientCommandType type, RoboteqCanOpenObjectDictionary index, uint8_t sub_index, uint32_t data, uint8_t data_length);
 
-    ros::NodeHandle nh_;
+    std::string node_name_;
 
     // ROS Control interfaces
     hardware_interface::JointStateInterface joint_state_interface_;
@@ -73,6 +85,8 @@ class BollerHardware : public hardware_interface::RobotHW {
 
     int port_;
     std::string address_;
+
+    int can_id_;
 
     // ROS Parameters
     double wheel_diameter_, max_accel_, max_speed_;
