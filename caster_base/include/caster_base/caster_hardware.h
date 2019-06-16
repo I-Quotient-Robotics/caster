@@ -1,5 +1,5 @@
-#ifndef BOLLER_HARDWARE_H_
-#define BOLLER_HARDWARE_H_
+#ifndef CASTER_HARDWARE_H_
+#define CASTER_HARDWARE_H_
 
 #include <string>
 
@@ -33,20 +33,17 @@
 
 namespace iqr {
 /**
-* Class representing Boller hardware, allows for ros_control to modify internal state via joint interfaces
+* Class representing Caster hardware, allows for ros_control to modify internal state via joint interfaces
 */
-class BollerHardware : public hardware_interface::RobotHW {
+class CasterHardware : public hardware_interface::RobotHW {
   public:
-    BollerHardware();
+    CasterHardware();
 
+    bool Connect();
     void Initialize(std::string node_name, std::string address, int port, uint32_t can_id);
 
     void UpdateHardwareStatus();
-    void UpdateJointsFromHardware();
     void WriteCommandsToHardware();
-
-    bool RequestUpdate(uint8_t can_id);
-    bool Connect();
 
     enum MotorIndex {
       kLeftMotor = 0x01,
@@ -66,12 +63,15 @@ class BollerHardware : public hardware_interface::RobotHW {
       kReadAbsBLCounter = 0x2105,
       kReadBLMotorRPM = 0x210A,
       kReadStatusFlags = 0x2111,
-      kReadFaultFlags = 0x2112
+      kReadFaultFlags = 0x2112,
+      kReadMotorStatusFlags = 0x2122,
     };
 
   private:
     void ResetTravelOffset();
     void RegisterControlInterfaces();
+
+    std::string ToBinary(size_t data, uint8_t length);
 
     bool Command(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint32_t data, uint8_t data_length);
     bool Query(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint8_t data_length, uint32_t *data_received);
@@ -112,4 +112,4 @@ class BollerHardware : public hardware_interface::RobotHW {
     } joints_[4];
 };
 }  // namespace iqr
-#endif  // BOLLER_HARDWARE_H_
+#endif  // CASTER_HARDWARE_H_

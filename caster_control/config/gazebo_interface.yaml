@@ -4,7 +4,7 @@ from_sim:
       type: sensor_msgs/JointState
     - topic: scan
       type: sensor_msgs/LaserScan
-    - topic: boller_velocity_controller/odom
+    - topic: caster_velocity_controller/odom
       type: nav_msgs/Odometry
     - topic: imu/data
       type: sensor_msgs/Imu
@@ -29,5 +29,5 @@ from_sim:
 
 to_sim:
   topics:
-    - topic: boller_velocity_controller/cmd_vel
+    - topic: caster_velocity_controller/cmd_vel
       type: geometry_msgs/Twist

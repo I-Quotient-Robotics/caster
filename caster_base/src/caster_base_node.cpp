@@ -1,9 +1,9 @@
-#include "boller_base/boller_hardware.h"
+#include "caster_base/caster_hardware.h"
 
 #include "controller_manager/controller_manager.h"
 
 int main(int argc, char *argv[]) {
-  ros::init(argc, argv, "boller_base_node");
+  ros::init(argc, argv, "caster_base_node");
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
@@ -27,19 +27,18 @@ int main(int argc, char *argv[]) {
   private_nh.param<int>("can_id", can_id, 1);
   node_name = ros::this_node::getName();
 
-  iqr::BollerHardware boller;
-  boller.Initialize(node_name, address, port, can_id);
-  controller_manager::ControllerManager boller_controller_manager(&boller, nh);
+  iqr::CasterHardware caster;
+  caster.Initialize(node_name, address, port, can_id);
+  controller_manager::ControllerManager caster_controller_manager(&caster, nh);
 
-  boller.Connect();
+  caster.Connect();
 
   ros::Duration period(0.1);
 
   while(ros::ok()) {
-    boller.UpdateHardwareStatus();
-    // boller.UpdateJointsFromHardware();
-    boller_controller_manager.update(ros::Time::now(), period);
-    boller.WriteCommandsToHardware();
+    caster.UpdateHardwareStatus();
+    caster_controller_manager.update(ros::Time::now(), period);
+    caster.WriteCommandsToHardware();
     period.sleep();
   }
 

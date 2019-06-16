@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="port" default="/dev/caster_robot)" />
+
+  <!-- Caster harware driver -->
+  <node pkg="caster_base" type="caster_base_node" name="caster_base_node" output="screen">
+    <param name="address" type="string" value="192.168.0.7" />
+    <param name="port" type="int" value="20001" />
+    <param name="can_id" type="int" value="1" />
+    <remap from="caster_velocity_controller/cmd_vel" to="key_vel"/>
+    <remap from="caster_velocity_controller/odom" to="odom"/>
+  </node>
+
+  <!-- Differential controller parameters and basic localization -->
+  <include file="$(find caster_control)/launch/control.launch" />
+
+  <!--Teleop -->
+  <!-- <include file="$(find caster_control)/launch/teleop.launch" /> -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/rviz/view.rviz" />
+</launch>

@@ -1,2 +1,2 @@
-# boller
-This is the boller agv ros stack
+# Caster
+This is the caster agv ros stack
