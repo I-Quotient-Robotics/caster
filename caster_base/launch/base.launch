@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="port" default="/dev/caster_robot)" />
+  <!-- <arg name="port" default="/dev/caster_robot)" /> -->
 
   <!-- Caster harware driver -->
   <node pkg="caster_base" type="caster_base_node" name="caster_base_node" output="screen">
