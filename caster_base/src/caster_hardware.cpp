@@ -38,7 +38,7 @@ void iqr::CasterHardware::Initialize(std::string node_name, std::string address,
 bool iqr::CasterHardware::Connect() {
   socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if(socket_fd_ == -1) {
-    ROS_INFO("%s\n", strerror(errno));
+    ROS_WARN("%s\n", strerror(errno));
     return false;
   }
 
@@ -54,7 +54,7 @@ bool iqr::CasterHardware::Connect() {
   setsockopt(socket_fd_, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(struct timeval));
 
   if (connect(socket_fd_, (struct sockaddr *)&device_addr_, sizeof(struct sockaddr_in)) == -1) {
-    ROS_INFO("%s\n", strerror(errno));
+    ROS_WARN("%s\n", strerror(errno));
     return false;
   } else {
     ROS_INFO("caster base connected");
@@ -208,7 +208,7 @@ void iqr::CasterHardware::SendCanOpenData(uint32_t node_id, RoboteqClientCommand
   data_sent = send(socket_fd_, buf, 13, 0);
   // ROS_INFO("data_sent: %d", data_sent);
   if(data_sent != 13) {
-    ROS_INFO("canopen send error");
+    ROS_WARN("canopen send error, %s", strerror(errno));
   }
   // ROS_INFO("Sent");
 }

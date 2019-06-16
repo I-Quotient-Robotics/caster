@@ -25,12 +25,6 @@
 #define CANBUS_REMOTE_FRAME             0b00000000
 #define CANBUS_DATA_FRAME               0b01000000
 
-#define CAN_ID_GET_COUNT                0x05
-#define CAN_ID_GET_SPEED                0x06
-#define CAN_ID_GET_STATUS               0x07
-#define CAN_ID_SET_SPEED                0x09
-
-
 namespace iqr {
 /**
 * Class representing Caster hardware, allows for ros_control to modify internal state via joint interfaces
