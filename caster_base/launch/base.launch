@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- <arg name="port" default="/dev/caster_robot)" /> -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find caster_description)/urdf/caster.urdf.xacro" />
 
   <!-- Caster harware driver -->
   <node pkg="caster_base" type="caster_base_node" name="caster_base_node" output="screen">
@@ -14,7 +14,11 @@
   <!-- Differential controller parameters and basic localization -->
   <include file="$(find caster_control)/launch/control.launch" />
 
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+
   <!--Teleop -->
   <!-- <include file="$(find caster_control)/launch/teleop.launch" /> -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/rviz/view.rviz" />
+
+  <!-- Viz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/viz/view.rviz" />
 </launch>

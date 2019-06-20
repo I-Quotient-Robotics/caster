@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
 
   iqr::CasterHardware caster;
   caster.Initialize(node_name, address, port, can_id);
+  // ros::Duration(1).sleep();
   controller_manager::ControllerManager caster_controller_manager(&caster, nh);
 
   caster.Connect();

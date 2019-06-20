@@ -103,7 +103,7 @@ class CasterHardware : public hardware_interface::RobotHW {
       Joint() :
         position(0), velocity(0), effort(0), velocity_command(0)
       { }
-    } joints_[4];
+    } joints_[2];
 };
 }  // namespace iqr
 #endif  // CASTER_HARDWARE_H_

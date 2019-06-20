@@ -123,13 +123,13 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   left_motor_flag = data;
   right_motor_flag = data >> 16;
 
-  joints_[kLeftMotor].velocity = left_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
-  joints_[kRightMotor].velocity = right_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kLeftMotor-1].velocity = left_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kRightMotor-1].velocity = right_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
 
-  joints_[kLeftMotor].position = l_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
-  joints_[kRightMotor].position = r_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kLeftMotor-1].position = l_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kRightMotor-1].position = r_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
 
-  // ROS_INFO("motor counter: %d, %d, %d, %d", l_count, r_count, l_rpm, r_rpm);
+  ROS_INFO("motor counter: %d, %d, %d, %d", l_count, r_count, l_rpm, r_rpm);
   // ROS_INFO("status: %s, fault: %s, left: %s, right: %s", \
             ToBinary(status_flag, sizeof(status_flag)).c_str(), ToBinary(fault_flag, sizeof(fault_flag)).c_str(), \
             ToBinary(left_motor_flag, sizeof(left_motor_flag)).c_str(), ToBinary(right_motor_flag, sizeof(right_motor_flag)).c_str());
@@ -146,8 +146,8 @@ void iqr::CasterHardware::ResetTravelOffset() {
 * Register interfaces with the RobotHW interface manager, allowing ros_control operation
 */
 void iqr::CasterHardware::RegisterControlInterfaces() {
-  ros::V_string joint_names = boost::assign::list_of("front_left_wheel")
-    ("front_right_wheel")("rear_left_wheel")("rear_right_wheel");
+  ros::V_string joint_names = boost::assign::list_of("drive_wheel_left_joint")
+    ("drive_wheel_right_joint");
 
   for (unsigned int i = 0; i < joint_names.size(); i++) {
     hardware_interface::JointStateHandle joint_state_handle(joint_names[i], &joints_[i].position, &joints_[i].velocity, &joints_[i].effort);
@@ -170,7 +170,7 @@ void iqr::CasterHardware::WriteCommandsToHardware() {
   Command(kSetVelocity, static_cast<uint8_t>(kLeftMotor), static_cast<uint32_t>(speed[0]), 4);
   // SendCanOpenData(1, kCommand, kSetVelocity, static_cast<uint8_t>(kLeftMotor), static_cast<uint32_t>(speed[0]), 4);
 
-  speed[1] = static_cast<int32_t>(joints_[1].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60);
+  speed[1] = static_cast<int32_t>(joints_[1].velocity_command / M_PI / 2.0 * REDUCTION_RATIO * 60) * -1.0;
   // s_v = ntohl(speed);
   // memcpy(buf+9, &s_v, 4);
   Command(kSetVelocity, static_cast<uint8_t>(kRightMotor), static_cast<uint32_t>(speed[1]), 4);

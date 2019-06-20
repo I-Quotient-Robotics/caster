@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<robot name="caster_robot" xmlns:xacro="http://www.ros.org/wiki/xacro" description="iqr caster robot">
+  <xacro:property name="PI" value="3.1415926535897931" />
+
+  <xacro:property name="wheel_length" value="0.1143" />
+  <xacro:property name="wheel_radius" value="0.1651" />
+
+  <xacro:macro name="default_inertial" params="mass">
+    <inertial>
+      <mass value="${mass}" />
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+             iyy="1.0" iyz="0.0"
+             izz="1.0" />
+    </inertial>
+  </xacro:macro>
+
+  <!-- support_wheel unit -->
+  <xacro:macro name="support_wheel" params="parent location *origin">
+    <link name="support_wheel_${location}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://caster_description/mesh/support_wheel.stl" />
+        </geometry>
+        <material name="">
+          <color rgba="0.3 0.3 0.3 1.0" />
+        </material>
+      </visual>
+      <xacro:default_inertial mass="0.1" />
+    </link>
+
+    <joint name="support_wheel_${location}_joint" type="continuous">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="support_wheel_${location}_link" />
+      <axis xyz="0 0 1" />
+    </joint>
+  </xacro:macro>
+
+  <!-- drive_wheel unit -->
+  <xacro:macro name="drive_wheel" params="parent location invert *origin">
+    <link name="drive_wheel_${location}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${invert*PI}" />
+        <geometry>
+          <mesh filename="package://caster_description/mesh/drive_wheel.stl" />
+        </geometry>
+        <material name="">
+          <color rgba="0.30 0.30 0.30 1" />
+        </material>
+      </visual>
+      <!-- xacro:default_inertial mass="0.1" / -->
+    </link>
+
+    <joint name="drive_wheel_${location}_joint" type="continuous">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="drive_wheel_${location}_link" />
+      <axis xyz="0 1 0" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ULT unit-->
+  <xacro:macro name="ultrasonic" params="parent location *origin">
+    <link name="ultrasonic_${location}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 ${PI/2} 0" />
+        <geometry>
+          <cylinder length="0.01" radius="0.01" />
+        </geometry>
+        <material name="">
+          <color rgba="0.3 0.3 0.3 1.0" />
+        </material>
+      </visual>
+      <xacro:default_inertial mass="0.1" />
+    </link>
+
+    <joint name="ultrasonic_${location}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="ultrasonic_${location}_link" />
+    </joint>
+  </xacro:macro>
+
+  <!-- base link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://caster_description/mesh/caster_base.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.98 1.0 0.94 1.0" />
+      </material>
+    </visual>
+    <xacro:default_inertial mass="10" />
+  </link>
+
+  <link name="base_footprint">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <xacro:default_inertial mass="0.0001" />
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 -0.030" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_footprint" />
+  </joint>
+
+  <!-- Laser link -->
+  <link name="laser_scan_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <xacro:default_inertial mass="0.0001" />
+  </link>
+
+  <joint name="laser_scan_joint" type="fixed">
+    <origin xyz="0.2301 0 0.147" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="laser_scan_link" />
+  </joint>
+
+  <!-- Drive wheel link -->
+  <xacro:drive_wheel parent="base_link" invert="0" location="left">
+    <origin xyz="0 0.2087 0.045" rpy="0 0 0" />
+  </xacro:drive_wheel>
+  <xacro:drive_wheel parent="base_link" invert="1" location="right">
+    <origin xyz="0 -0.2087 0.045" rpy="0 0 0" />
+  </xacro:drive_wheel>
+
+  <!-- Support wheel link -->
+  <xacro:support_wheel parent="base_link" location="front_left">
+    <origin xyz="0.185 0.150 0.037" rpy="0 0 0" />
+  </xacro:support_wheel>
+  <xacro:support_wheel parent="base_link" location="front_right">
+    <origin xyz="0.185 -0.150 0.037" rpy="0 0 0" />
+  </xacro:support_wheel>
+  <xacro:support_wheel parent="base_link" location="rear_left">
+    <origin xyz="-0.185 0.150 0.037" rpy="0 0 0" />
+  </xacro:support_wheel>
+  <xacro:support_wheel parent="base_link" location="rear_right">
+    <origin xyz="-0.185 -0.150 0.037" rpy="0 0 0" />
+  </xacro:support_wheel>
+
+  <!-- Ultrasonic link-->
+  <xacro:ultrasonic parent="base_link" location="front_left">
+    <origin xyz="0.25 0.075 0.07" rpy="0 0 0" />
+  </xacro:ultrasonic>
+  <xacro:ultrasonic parent="base_link" location="front_right">
+    <origin xyz="0.25 -0.075 0.07" rpy="0 0 0" />
+  </xacro:ultrasonic>
+  <xacro:ultrasonic parent="base_link" location="rear_left">
+    <origin xyz="-0.255 0.055 0.205" rpy="0 0 ${PI}" />
+  </xacro:ultrasonic>
+  <xacro:ultrasonic parent="base_link" location="rear_right">
+    <origin xyz="-0.255 -0.055 0.205" rpy="0 0 ${PI}" />
+  </xacro:ultrasonic>
+</robot>

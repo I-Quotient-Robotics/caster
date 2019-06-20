@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Load robot description -->
-  <include file="$(find husky_description)/launch/description.launch" >
-<!--     <arg name="laser_enabled" default="$(arg laser_enabled)"/>
+<!--   <include file="$(find husky_description)/launch/description.launch" >
+    <arg name="laser_enabled" default="$(arg laser_enabled)"/>
     <arg name="kinect_enabled" default="$(arg kinect_enabled)"/>
-    <arg name="urdf_extras" default="$(arg urdf_extras)"/> -->
+    <arg name="urdf_extras" default="$(arg urdf_extras)"/>
   </include>
-
+ -->
   <!-- Load controller configuration -->
   <rosparam command="load" file="$(find caster_control)/config/control.yaml" />
 

@@ -1,66 +1,66 @@
-<?xml version = "1.0"?>
-<robot name = "caster_sim" xmlns:xacro = "http://www.ros.org/wiki/xacro" description = "iqr caster">
-  <gazebo reference = "footprint">
+<?xml version="1.0"?>
+<robot name="caster_sim" xmlns:xacro="http://www.ros.org/wiki/xacro" description="iqr caster">
+  <gazebo reference="footprint">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "base_link">
+  <gazebo reference="base_link">
     <material>Gazebo/ivory_white</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "laser_scan_link">
+  <gazebo reference="laser_scan_link">
     <material>Gazebo</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "left_front_support_wheel_link">
+  <gazebo reference="left_front_support_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "left_back_support_wheel_link">
+  <gazebo reference="left_back_support_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "right_front_support_wheel_link">
+  <gazebo reference="right_front_support_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "right_back_support_wheel_link">
+  <gazebo reference="right_back_support_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "left_drive_wheel_link">
+  <gazebo reference="left_drive_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "right_drive_wheel_link">
+  <gazebo reference="right_drive_wheel_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "left_front_ultrasound_detector_link">
+  <gazebo reference="left_front_ultrasound_detector_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "left_back_ultrasound_detector_link">
+  <gazebo reference="left_back_ultrasound_detector_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "right_front_ultrasound_detector_link">
+  <gazebo reference="right_front_ultrasound_detector_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
 
-  <gazebo reference = "right_back_ultrasound_detector_link">
+  <gazebo reference="right_back_ultrasound_detector_link">
     <material>Gazebo/dark</material>
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
