@@ -124,12 +124,12 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   right_motor_flag = data >> 16;
 
   joints_[kLeftMotor-1].velocity = left_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
-  joints_[kRightMotor-1].velocity = right_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kRightMotor-1].velocity = right_rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
 
   joints_[kLeftMotor-1].position = l_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
-  joints_[kRightMotor-1].position = r_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kRightMotor-1].position = r_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
 
-  ROS_INFO("motor counter: %d, %d, %d, %d", l_count, r_count, l_rpm, r_rpm);
+  // ROS_INFO("motor counter: %d, %d, %d, %d", l_count, r_count, l_rpm, r_rpm);
   // ROS_INFO("status: %s, fault: %s, left: %s, right: %s", \
             ToBinary(status_flag, sizeof(status_flag)).c_str(), ToBinary(fault_flag, sizeof(fault_flag)).c_str(), \
             ToBinary(left_motor_flag, sizeof(left_motor_flag)).c_str(), ToBinary(right_motor_flag, sizeof(right_motor_flag)).c_str());

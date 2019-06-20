@@ -19,7 +19,7 @@
     <rosparam command="load" file="$(find caster_control)/config/localization.yaml" />
   </node>
  -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
 
   <!-- Override the default control parameters, see config/empty.yaml for default. -->
   <!-- <rosparam command="load" file="$(arg config_extras)" /> -->

@@ -52,7 +52,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 0.100000001
+    - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -146,7 +146,13 @@ Visualization Manager:
           Value: true
         laser_scan_link:
           Value: true
-        odom:
+        support_wheel_front_left_link:
+          Value: true
+        support_wheel_front_right_link:
+          Value: true
+        support_wheel_rear_left_link:
+          Value: true
+        support_wheel_rear_right_link:
           Value: true
         ultrasonic_front_left_link:
           Value: true
@@ -162,24 +168,31 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        odom:
-          base_link:
-            base_footprint:
-              {}
-            drive_wheel_left_link:
-              {}
-            drive_wheel_right_link:
-              {}
-            laser_scan_link:
-              {}
-            ultrasonic_front_left_link:
-              {}
-            ultrasonic_front_right_link:
-              {}
-            ultrasonic_rear_left_link:
-              {}
-            ultrasonic_rear_right_link:
-              {}
+        base_link:
+          base_footprint:
+            {}
+          drive_wheel_left_link:
+            {}
+          drive_wheel_right_link:
+            {}
+          laser_scan_link:
+            {}
+          support_wheel_front_left_link:
+            {}
+          support_wheel_front_right_link:
+            {}
+          support_wheel_rear_left_link:
+            {}
+          support_wheel_rear_right_link:
+            {}
+          ultrasonic_front_left_link:
+            {}
+          ultrasonic_front_right_link:
+            {}
+          ultrasonic_rear_left_link:
+            {}
+          ultrasonic_rear_right_link:
+            {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -207,7 +220,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.45464468
+      Distance: 1.42097962
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -222,10 +235,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: -0.574602127
+      Pitch: 0.0153979091
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.82539892
+      Yaw: 2.07539821
     Saved: ~
 Window Geometry:
   Displays:
