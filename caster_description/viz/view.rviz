@@ -52,7 +52,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
+    - Alpha: 0.300000012
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -146,6 +146,8 @@ Visualization Manager:
           Value: true
         laser_scan_link:
           Value: true
+        odom:
+          Value: true
         support_wheel_front_left_link:
           Value: true
         support_wheel_front_right_link:
@@ -168,38 +170,39 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
-          base_footprint:
-            {}
-          drive_wheel_left_link:
-            {}
-          drive_wheel_right_link:
-            {}
-          laser_scan_link:
-            {}
-          support_wheel_front_left_link:
-            {}
-          support_wheel_front_right_link:
-            {}
-          support_wheel_rear_left_link:
-            {}
-          support_wheel_rear_right_link:
-            {}
-          ultrasonic_front_left_link:
-            {}
-          ultrasonic_front_right_link:
-            {}
-          ultrasonic_rear_left_link:
-            {}
-          ultrasonic_rear_right_link:
-            {}
+        odom:
+          base_link:
+            base_footprint:
+              {}
+            drive_wheel_left_link:
+              {}
+            drive_wheel_right_link:
+              {}
+            laser_scan_link:
+              {}
+            support_wheel_front_left_link:
+              {}
+            support_wheel_front_right_link:
+              {}
+            support_wheel_rear_left_link:
+              {}
+            support_wheel_rear_right_link:
+              {}
+            ultrasonic_front_left_link:
+              {}
+            ultrasonic_front_right_link:
+              {}
+            ultrasonic_rear_left_link:
+              {}
+            ultrasonic_rear_right_link:
+              {}
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -220,25 +223,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.42097962
+      Distance: 2.49779224
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0199676286
-        Y: -0.0280567445
-        Z: 0.101993464
+        X: 0.362824351
+        Y: -0.164246693
+        Z: 0.324677706
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.0153979091
+      Pitch: 0.565397859
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.07539821
+      Yaw: 4.01539803
     Saved: ~
 Window Geometry:
   Displays:

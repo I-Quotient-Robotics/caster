@@ -2,7 +2,6 @@
 
 #include <math.h>
 #include <errno.h>
-#include <boost/assign/list_of.hpp>
 
 const uint16_t kCanOpenSendHeader = 0x600;
 const uint16_t kCanOpenRecvHeader = 0x580;
@@ -23,11 +22,15 @@ std::string iqr::CasterHardware::ToBinary(size_t data, uint8_t length) {
   return data_binary;
 }
 
-void iqr::CasterHardware::Initialize(std::string node_name, std::string address, int port, uint32_t can_id) {
+void iqr::CasterHardware::Initialize(std::string node_name, std::string address, int port, \
+                                     uint32_t can_id, std::string left_wheel_joint, std::string right_wheel_joint) {
   node_name_ = node_name;
   address_ = address;
   port_ = port;
   can_id_ = can_id;
+
+  left_wheel_joint_ = left_wheel_joint;
+  right_wheel_joint_ = right_wheel_joint;
 
   RegisterControlInterfaces();
 
@@ -58,9 +61,17 @@ bool iqr::CasterHardware::Connect() {
     return false;
   } else {
     ROS_INFO("caster base connected");
+
+    // set motor counter to 0
+    ClearBLCounter();
   }
 
   return true;
+}
+
+void iqr::CasterHardware::ClearBLCounter() {
+  Command(kSetBLCounter, static_cast<uint8_t>(kLeftMotor), 0, 4);
+  Command(kSetBLCounter, static_cast<uint8_t>(kRightMotor), 0, 4);
 }
 
 void iqr::CasterHardware::UpdateHardwareStatus() {
@@ -76,9 +87,9 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   r_rpm = static_cast<int16_t>(right_rpm);
 
   /* request motor counter */
-  uint32_t l_count=-1, r_count=-1;
-  success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kLeftMotor), 4, &l_count);
-  success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kRightMotor), 4, &r_count);
+  int32_t l_count=-1, r_count=-1;
+  success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kLeftMotor), 4, reinterpret_cast<uint32_t*>(&l_count));
+  success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kRightMotor), 4, reinterpret_cast<uint32_t*>(&r_count));
 
   /* request status flags 
    * f1 = Serial mode
@@ -130,6 +141,7 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   joints_[kRightMotor-1].position = r_count / 30.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
 
   // ROS_INFO("motor counter: %d, %d, %d, %d", l_count, r_count, l_rpm, r_rpm);
+  // ROS_INFO("motor counter: %f, %f, %d, %d", joints_[0].position, joints_[1].position, l_rpm, r_rpm);
   // ROS_INFO("status: %s, fault: %s, left: %s, right: %s", \
             ToBinary(status_flag, sizeof(status_flag)).c_str(), ToBinary(fault_flag, sizeof(fault_flag)).c_str(), \
             ToBinary(left_motor_flag, sizeof(left_motor_flag)).c_str(), ToBinary(right_motor_flag, sizeof(right_motor_flag)).c_str());
@@ -146,16 +158,17 @@ void iqr::CasterHardware::ResetTravelOffset() {
 * Register interfaces with the RobotHW interface manager, allowing ros_control operation
 */
 void iqr::CasterHardware::RegisterControlInterfaces() {
-  ros::V_string joint_names = boost::assign::list_of("drive_wheel_left_joint")
-    ("drive_wheel_right_joint");
+  hardware_interface::JointStateHandle left_wheel_joint_state_handle(left_wheel_joint_, &joints_[0].position, &joints_[0].velocity, &joints_[0].effort);
+  joint_state_interface_.registerHandle(left_wheel_joint_state_handle);
 
-  for (unsigned int i = 0; i < joint_names.size(); i++) {
-    hardware_interface::JointStateHandle joint_state_handle(joint_names[i], &joints_[i].position, &joints_[i].velocity, &joints_[i].effort);
-    joint_state_interface_.registerHandle(joint_state_handle);
+  hardware_interface::JointHandle left_wheel_joint_handle(left_wheel_joint_state_handle, &joints_[0].velocity_command);
+  velocity_joint_interface_.registerHandle(left_wheel_joint_handle);
 
-    hardware_interface::JointHandle joint_handle(joint_state_handle, &joints_[i].velocity_command);
-    velocity_joint_interface_.registerHandle(joint_handle);
-  }
+  hardware_interface::JointStateHandle right_wheel_joint_state_handle(right_wheel_joint_, &joints_[1].position, &joints_[1].velocity, &joints_[1].effort);
+  joint_state_interface_.registerHandle(right_wheel_joint_state_handle);
+
+  hardware_interface::JointHandle right_wheel_joint_handle(right_wheel_joint_state_handle, &joints_[1].velocity_command);
+  velocity_joint_interface_.registerHandle(right_wheel_joint_handle);
 
   registerInterface(&joint_state_interface_);
   registerInterface(&velocity_joint_interface_);

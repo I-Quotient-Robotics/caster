@@ -34,7 +34,7 @@ class CasterHardware : public hardware_interface::RobotHW {
     CasterHardware();
 
     bool Connect();
-    void Initialize(std::string node_name, std::string address, int port, uint32_t can_id);
+    void Initialize(std::string node_name, std::string address, int port, uint32_t can_id, std::string left_wheel_joint, std::string right_wheel_joint);
 
     void UpdateHardwareStatus();
     void WriteCommandsToHardware();
@@ -52,6 +52,7 @@ class CasterHardware : public hardware_interface::RobotHW {
     enum RoboteqCanOpenObjectDictionary {
       /* runtime commands */
       kSetVelocity = 0x2002,
+      kSetBLCounter = 0x2004,
 
       /* runtime queries */
       kReadAbsBLCounter = 0x2105,
@@ -62,6 +63,7 @@ class CasterHardware : public hardware_interface::RobotHW {
     };
 
   private:
+    void ClearBLCounter();
     void ResetTravelOffset();
     void RegisterControlInterfaces();
 
@@ -72,6 +74,8 @@ class CasterHardware : public hardware_interface::RobotHW {
     void SendCanOpenData(uint32_t node_id, RoboteqClientCommandType type, RoboteqCanOpenObjectDictionary index, uint8_t sub_index, uint32_t data, uint8_t data_length);
 
     std::string node_name_;
+
+    std::string left_wheel_joint_, right_wheel_joint_;
 
     // ROS Control interfaces
     hardware_interface::JointStateInterface joint_state_interface_;
