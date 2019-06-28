@@ -15,12 +15,18 @@ int main(int argc, char *argv[]) {
   caster.Initialize(node_name, nh, private_nh);
   controller_manager::ControllerManager caster_controller_manager(&caster, nh);
 
+  // reset motor counter etc...
+  ros::Duration(3).sleep();
+  caster.Clear();
+  // ros::spinOnce();
+  // ros::Duration(1).sleep();
+
   // caster.Connect();
 
   ros::Duration period(0.1);
 
   while(ros::ok()) {
-    // caster.UpdateHardwareStatus();
+    caster.UpdateHardwareStatus();
     caster_controller_manager.update(ros::Time::now(), period);
     caster.WriteCommandsToHardware();
     ros::spinOnce();

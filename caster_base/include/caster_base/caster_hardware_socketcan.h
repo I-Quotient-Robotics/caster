@@ -36,14 +36,18 @@ class CasterHardware : public hardware_interface::RobotHW {
     void UpdateHardwareStatus();
     void WriteCommandsToHardware();
 
+    void Clear();
+
     enum MotorIndex {
-      kLeftMotor = 0x01,
-      kRightMotor = 0x02, 
+      kLeftMotor = 0x00,
+      kRightMotor = 0x01, 
     };
 
     enum RoboteqClientCommandType {
       kCommand = 0x02,
-      kQuery = 0x04
+      kQuery = 0x04,
+      kResponseCommandSuccess = 0x06,
+      kResponseMessageError = 0x08
     };
 
     enum RoboteqCanOpenObjectDictionary {
@@ -59,15 +63,20 @@ class CasterHardware : public hardware_interface::RobotHW {
       kReadMotorStatusFlags = 0x2122,
     };
 
+    struct MotorStatus {
+      int16_t rpm;
+      int32_t counter;
+      uint8_t status;
+    };
+
   private:
-    void ClearBLCounter();
     void ResetTravelOffset();
     void RegisterControlInterfaces();
 
     std::string ToBinary(size_t data, uint8_t length);
 
     bool Command(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint32_t data, uint8_t data_length);
-    bool Query(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint8_t data_length, uint32_t *data_received);
+    bool Query(RoboteqCanOpenObjectDictionary query, uint8_t sub_index, uint8_t data_length);
     void SendCanOpenData(uint32_t node_id, RoboteqClientCommandType type, RoboteqCanOpenObjectDictionary index, uint8_t sub_index, uint32_t data, uint8_t data_length);
 
     void CanReceiveCallback(const can_msgs::Frame::ConstPtr& msg);
@@ -93,7 +102,9 @@ class CasterHardware : public hardware_interface::RobotHW {
     // ROS Parameters
     double wheel_diameter_, max_accel_, max_speed_;
 
-    double polling_timeout_;
+    int8_t fault_flags_;
+    int8_t status_flags_;
+    MotorStatus motor_status_[2];
 
     /**
     * Joint structure that is hooked to ros_control's InterfaceManager, to allow control via diff_drive_controller

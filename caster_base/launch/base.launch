@@ -52,5 +52,5 @@
   <!-- <include file="$(find caster_control)/launch/teleop.launch" /> -->
 
   <!-- Viz -->
-  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/viz/view.rviz" /> -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/viz/view.rviz" />
 </launch>
