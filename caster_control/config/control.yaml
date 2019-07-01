@@ -1,12 +1,12 @@
 caster_joint_publisher:
   type: "joint_state_controller/JointStateController"
-  publish_rate: 10
+  publish_rate: 40
 
 caster_velocity_controller:
   type: "diff_drive_controller/DiffDriveController"
   left_wheel: ['drive_wheel_left_joint']
   right_wheel: ['drive_wheel_right_joint']
-  publish_rate: 10
+  publish_rate: 40
   pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
   twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
   cmd_vel_timeout: 0.25

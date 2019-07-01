@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 
 <launch>
+  <arg name="move_base" default="false"/>
 
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping_node" respawn="false" output="screen">
+    <rosparam file="$(find caster_navigation)/config/gmapping.yaml" command="load" />
+  </node>
+
+  <group if="$(arg move_base)">
+    <node pkg="move_base" type="move_base" name="move_base_node" respawn="false" output="screen">
+    </node>
+  </group>
 </launch>

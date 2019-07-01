@@ -43,7 +43,7 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
   can_sub_ = nh_.subscribe<can_msgs::Frame>(receive_topic_, 10, &iqr::CasterHardware::CanReceiveCallback, this);
 
   controller_manager_ = new controller_manager::ControllerManager(this, nh);
-  timer_ = nh.createTimer(ros::Duration(0.1), &iqr::CasterHardware::ControllerTimerCallback, this);
+  timer_ = nh.createTimer(ros::Duration(0.025), &iqr::CasterHardware::ControllerTimerCallback, this);
 
   RegisterControlInterfaces();
 
