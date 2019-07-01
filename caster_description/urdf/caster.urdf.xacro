@@ -85,6 +85,12 @@
     </joint>
   </xacro:macro>
 
+  <!-- base footprint -->
+  <link name="base_footprint">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <!-- <xacro:default_inertial mass="0.0001" /> -->
+  </link>
+
   <!-- base link -->
   <link name="base_link">
     <visual>
@@ -99,27 +105,28 @@
     <xacro:default_inertial mass="10" />
   </link>
 
-  <link name="base_footprint">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <!-- <xacro:default_inertial mass="0.0001" /> -->
-  </link>
+  <joint name="base_link_joint" type="fixed">
+    <origin xyz="0 0 0.030" rpy="0 0 0" />
+    <parent link="base_footprint" />
+    <child link="base_link" />
+  </joint>
 
-  <joint name="base_footprint_joint" type="fixed">
-    <origin xyz="0 0 -0.030" rpy="0 0 0" />
+  <!-- IMU link -->
+  <link name="imu_link" />
+
+  <joint name="imu_link_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="base_link" />
-    <child link="base_footprint" />
+    <child link="imu_link" />
   </joint>
 
   <!-- Laser link -->
-  <link name="laser_scan_link">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <xacro:default_inertial mass="0.0001" />
-  </link>
+  <link name="laser_link" />
 
-  <joint name="laser_scan_joint" type="fixed">
+  <joint name="laser_link_joint" type="fixed">
     <origin xyz="0.2301 0 0.147" rpy="0 0 0" />
     <parent link="base_link" />
-    <child link="laser_scan_link" />
+    <child link="laser_link" />
   </joint>
 
   <!-- Drive wheel link -->

@@ -22,6 +22,12 @@ std::string iqr::CasterHardware::ToBinary(size_t data, uint8_t length) {
   return data_binary;
 }
 
+void iqr::CasterHardware::ControllerTimerCallback(const ros::TimerEvent&) {
+  UpdateHardwareStatus();
+  controller_manager_->update(ros::Time::now(), ros::Duration(0.1));
+  WriteCommandsToHardware();
+}
+
 void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh, ros::NodeHandle& private_nh) {
   node_name_ = node_name;
   nh_ = nh;
@@ -35,6 +41,9 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
 
   can_pub_ = nh_.advertise<can_msgs::Frame>(send_topic_, 1000);
   can_sub_ = nh_.subscribe<can_msgs::Frame>(receive_topic_, 10, &iqr::CasterHardware::CanReceiveCallback, this);
+
+  controller_manager_ = new controller_manager::ControllerManager(this, nh);
+  timer_ = nh.createTimer(ros::Duration(0.1), &iqr::CasterHardware::ControllerTimerCallback, this);
 
   RegisterControlInterfaces();
 
@@ -58,6 +67,10 @@ void iqr::CasterHardware::CanReceiveCallback(const can_msgs::Frame::ConstPtr& ms
       switch (index) {
         case kReadAbsBLCounter: {
           memcpy(&motor_status_[sub_index-1].counter, msg->data.data()+4, 4);
+          if(motor_status_[sub_index-1].counter_reset == false) {
+            motor_status_[sub_index-1].counter_offset = motor_status_[sub_index-1].counter;
+            motor_status_[sub_index-1].counter_reset = true;
+          }
           // ROS_INFO("Query response, counter %d: %d", sub_index, motor_status_[sub_index-1].counter);
           break;
         }
@@ -96,8 +109,10 @@ void iqr::CasterHardware::CanReceiveCallback(const can_msgs::Frame::ConstPtr& ms
 
 void iqr::CasterHardware::Clear() {
   /* Clear BL Counter */
-  Command(kSetBLCounter, static_cast<uint8_t>(kLeftMotor+1), 0, 4);
-  Command(kSetBLCounter, static_cast<uint8_t>(kRightMotor+1), 0, 4);
+  // Command(kSetBLCounter, static_cast<uint8_t>(kLeftMotor+1), 0, 4);
+  // Command(kSetBLCounter, static_cast<uint8_t>(kRightMotor+1), 0, 4);
+  // motor_status_[kLeftMotor].counter_offset = motor_status_[kLeftMotor].counter;
+  // motor_status_[kRightMotor].counter_offset = motor_status_[kRightMotor].counter;
 }
 
 void iqr::CasterHardware::UpdateHardwareStatus() {
@@ -163,8 +178,8 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   joints_[kLeftMotor].velocity = motor_status_[kLeftMotor].rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
   joints_[kRightMotor].velocity = motor_status_[kRightMotor].rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
 
-  joints_[kLeftMotor].position = motor_status_[kLeftMotor].counter / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
-  joints_[kRightMotor].position = motor_status_[kRightMotor].counter / 30.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
+  joints_[kLeftMotor].position = (motor_status_[kLeftMotor].counter-motor_status_[kLeftMotor].counter_offset) / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
+  joints_[kRightMotor].position = (motor_status_[kRightMotor].counter-motor_status_[kRightMotor].counter_offset) / 30.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
 
   // ROS_INFO("motor counter: %d, %d, %d, %d", motor_status_[kLeftMotor].counter, motor_status_[kRightMotor].counter, motor_status_[kLeftMotor].rpm, motor_status_[kRightMotor].rpm);
   // ROS_INFO("motor counter: %f, %f, %d, %d", joints_[0].position, joints_[1].position, l_rpm, r_rpm);

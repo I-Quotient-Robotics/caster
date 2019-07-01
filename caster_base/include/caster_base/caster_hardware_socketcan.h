@@ -11,6 +11,8 @@
 #include "ros/ros.h"
 #include "can_msgs/Frame.h"
 #include "sensor_msgs/JointState.h"
+#include "controller_manager/controller_manager.h"
+
 #include "hardware_interface/robot_hw.h"
 #include "hardware_interface/joint_state_interface.h"
 #include "hardware_interface/joint_command_interface.h"
@@ -66,7 +68,13 @@ class CasterHardware : public hardware_interface::RobotHW {
     struct MotorStatus {
       int16_t rpm;
       int32_t counter;
+      int32_t counter_offset;
       uint8_t status;
+      bool counter_reset;
+
+      MotorStatus() :
+        rpm(0), counter(0), status(0), counter_reset(false)
+      { }
     };
 
   private:
@@ -81,10 +89,15 @@ class CasterHardware : public hardware_interface::RobotHW {
 
     void CanReceiveCallback(const can_msgs::Frame::ConstPtr& msg);
 
+    void ControllerTimerCallback(const ros::TimerEvent&);
+
     std::string node_name_;
 
     ros::NodeHandle nh_;
     ros::NodeHandle private_nh_;
+
+    ros::Timer timer_;
+    controller_manager::ControllerManager *controller_manager_;
 
     std::string send_topic_, receive_topic_;
     

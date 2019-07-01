@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- Caster description -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find caster_description)/urdf/caster.urdf.xacro" />
 
   <!-- Socketcan bridge -->
@@ -7,45 +8,76 @@
     <param name="can_device" type="string" value="can0" />
   </node>
 
-  <!-- Caster harware driver -->
-<!--   <node pkg="caster_base" type="caster_base_node" name="caster_base_node" output="screen">
-    <param name="address" type="string" value="192.168.0.7" />
-    <param name="port" type="int" value="20001" />
-    <param name="can_id" type="int" value="1" />
-    <param name="left_wheel_joint" type="string" value="drive_wheel_left_joint" />
-    <param name="right_wheel_joint" type="string" value="drive_wheel_right_joint" />
-    <remap from="caster_velocity_controller/cmd_vel" to="key_vel"/>
-    <remap from="caster_velocity_controller/odom" to="odom"/>
-  </node> -->
-
+  <!-- Caster driver -->
   <node pkg="caster_base" type="caster_base_socketcan_node" name="caster_base_node" output="screen">
     <param name="can_send_topic" type="string" value="sent_messages" />
     <param name="can_receive_topic" type="string" value="received_messages" />
     <param name="can_id" type="int" value="1" />
     <param name="left_wheel_joint" type="string" value="drive_wheel_left_joint" />
     <param name="right_wheel_joint" type="string" value="drive_wheel_right_joint" />
-    <remap from="caster_velocity_controller/cmd_vel" to="key_vel"/>
+    <remap from="caster_velocity_controller/cmd_vel" to="cmd_vel"/>
     <remap from="caster_velocity_controller/odom" to="odom"/>
   </node>
 
-<!--   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
-    <param name="output_frame" value="odom"/>
-    <param name="freq" value="30.0"/>
-    <param name="sensor_timeout" value="1.0"/>
-    <param name="odom_used" value="true"/>
-    <param name="imu_used" value="false"/>
-    <param name="vo_used" value="false"/>
-    <param name="debug" value="false"/>
-    <param name="self_diagnose" value="false"/>
-    <remap from="odom" to="caster_velocity_controller/odom"/>
+  <!-- Imu driver -->
+  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen" >
+    <param name="baudrate" type="int" value="115200" />
+    <param name="port" type="string" value="/dev/ttyUSB0" />
+    <param name="looprate" type="int" value="20" />
+    <remap from="imu/data" to="imu_data"/>
+  </node>
+
+  <!-- Laser driver -->
+  <node pkg="urg_node" type="urg_node" name="urg_node" output="screen">
+    <param name="ip_address" value="192.168.0.10"/>
+    <param name="frame_id" value="laser_link"/>
+    <param name="calibrate_time" value="false"/>
+    <param name="publish_intensity" value="true"/>
+    <param name="publish_multiecho" value="false"/>
+    <param name="angle_min" value="-1.5707963"/>
+    <param name="angle_max" value="1.5707963"/>
+  </node>
+
+  <!-- BMS driver -->
+<!--   <node pkg="hongfu_bms_driver" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="screen">
+    <param name="port" type="string" value="/dev/hongfu_bms" />
+    <param name="frame_id" type="string"value="hongfu_bms"  />
+    <param name="baudrate" type="int" value="9600" />
+    <param name="looprate" type="int" value="1" />
+    <remap from="/hongfu_bms_status/hongfu_bms" to="/bms"/>
   </node> -->
 
-  <!-- Differential controller parameters and basic localization -->
-  <include file="$(find caster_control)/launch/control.launch" />
+  <!-- Ultrasonic sensor driver -->
+<!--   <node pkg="dauxi_ks106" type="dauxi_ks106_node" name="dauxi_ks106_node" output="screen">
+    <param name="port" type="string" value="/dev/dauxi_ks106"/>
+    <param name="baudrate" type="int" value="9600"/>
+    <param name="frequency" type="int" value="10"/>
+    <param name="topic" type="string" value="us"/>
+    <param name="us1_frame_id" type="string" value="ks106_us1"/>
+    <param name="us2_frame_id" type="string" value="ks106_us2"/>
+    <param name="us3_frame_id" type="string" value="ks106_us3"/>
+    <param name="us4_frame_id" type="string" value="ks106_us4"/>
+  </node> -->
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
      <param name="use_tf_static" value="false" />
-     <param name="publish_frequency" value="10" />
+     <param name="publish_frequency" value="30" />
+  </node>
+
+  <!-- Caster controller -->
+  <include file="$(find caster_control)/launch/control.launch" />
+
+  <!-- Robot pose ekf -->
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+    <param name="output_frame" value="odom"/>
+    <param name="base_footprint_frame" value="base_footprint"/>
+    <param name="freq" value="30.0"/>
+    <param name="sensor_timeout" value="1.0"/>
+    <param name="odom_used" value="true"/>
+    <param name="imu_used" value="true"/>
+    <param name="vo_used" value="false"/>
+    <param name="debug" value="true"/>
+    <param name="self_diagnose" value="false"/>
   </node>
 
   <!--Teleop -->

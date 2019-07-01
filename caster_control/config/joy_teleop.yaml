@@ -1,0 +1,15 @@
+teleop:
+  move:
+    type: topic
+    message_type: geometry_msgs/Twist
+    topic_name: cmd_vel
+    deadman_buttons: [0]
+    axis_mappings:
+      -
+        axis: 1
+        target: linear.x
+        scale: 0.5
+      -
+        axis: 0
+        target: angular.z
+        scale: 0.5

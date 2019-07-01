@@ -7,8 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
-        - /TF1
-      Splitter Ratio: 0.5
+      Splitter Ratio: 0.579250693
     Tree Height: 775
   - Class: rviz/Selection
     Name: Selection
@@ -28,7 +27,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Toolbars:
   toolButtonStyle: 2
 Visualization Manager:
@@ -52,7 +51,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 0.300000012
+    - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -81,7 +80,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        laser_scan_link:
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        laser_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -132,77 +135,54 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
-        base_link:
-          Value: true
-        drive_wheel_left_link:
-          Value: true
-        drive_wheel_right_link:
-          Value: true
-        laser_scan_link:
-          Value: true
-        odom:
-          Value: true
-        support_wheel_front_left_link:
-          Value: true
-        support_wheel_front_right_link:
-          Value: true
-        support_wheel_rear_left_link:
-          Value: true
-        support_wheel_rear_right_link:
-          Value: true
-        ultrasonic_front_left_link:
-          Value: true
-        ultrasonic_front_right_link:
-          Value: true
-        ultrasonic_rear_left_link:
-          Value: true
-        ultrasonic_rear_right_link:
-          Value: true
       Marker Scale: 0.300000012
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        odom:
-          base_link:
-            base_footprint:
-              {}
-            drive_wheel_left_link:
-              {}
-            drive_wheel_right_link:
-              {}
-            laser_scan_link:
-              {}
-            support_wheel_front_left_link:
-              {}
-            support_wheel_front_right_link:
-              {}
-            support_wheel_rear_left_link:
-              {}
-            support_wheel_rear_right_link:
-              {}
-            ultrasonic_front_left_link:
-              {}
-            ultrasonic_front_right_link:
-              {}
-            ultrasonic_rear_left_link:
-              {}
-            ultrasonic_rear_right_link:
-              {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 4.31478405
+        Min Value: 0.227664188
+        Value: true
+      Axis: X
+      Channel Name: x
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4.26233482
+      Min Color: 0; 0; 0
+      Min Intensity: 0.0749686584
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.00999999978
+      Style: Flat Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -223,25 +203,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.49779224
+      Distance: 23.0718346
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.362824351
-        Y: -0.164246693
-        Z: 0.324677706
-      Focal Shape Fixed Size: true
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: -0.619602025
+      Pitch: 0.785398185
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.02539778
+      Yaw: 0.785398185
     Saved: ~
 Window Geometry:
   Displays:
