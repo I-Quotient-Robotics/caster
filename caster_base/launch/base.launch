@@ -22,16 +22,16 @@
   <!-- Imu driver -->
   <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen" >
     <param name="baudrate" type="int" value="115200" />
-    <param name="port" type="string" value="/dev/ttyUSB0" />
+    <param name="port" type="string" value="/dev/jy901" />
     <param name="looprate" type="int" value="40" />
     <remap from="imu/data" to="imu_data"/>
   </node>
 
   <!-- Laser driver -->
   <node pkg="urg_node" type="urg_node" name="urg_node" output="screen">
-    <param name="ip_address" value="192.168.0.10"/>
+    <param name="ip_address" value="192.168.33.7"/>
     <param name="frame_id" value="laser_link"/>
-    <param name="calibrate_time" value="false"/>
+    <param name="calibrate_time" value="true"/>
     <param name="publish_intensity" value="true"/>
     <param name="publish_multiecho" value="false"/>
     <param name="angle_min" value="-1.5707963"/>
@@ -59,30 +59,27 @@
     <param name="us4_frame_id" type="string" value="ks106_us4"/>
   </node> -->
 
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-     <param name="use_tf_static" value="true" />
-     <param name="publish_frequency" value="40" />
-  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <!-- Caster controller -->
   <include file="$(find caster_control)/launch/control.launch" />
 
   <!-- Robot pose ekf -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+<!--   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
-    <param name="freq" value="40.0"/>
+    <param name="freq" value="50.0"/>
     <param name="sensor_timeout" value="1.0"/>
     <param name="odom_used" value="true"/>
     <param name="imu_used" value="true"/>
     <param name="vo_used" value="false"/>
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="false"/>
-  </node>
+  </node> -->
 
   <!--Teleop -->
   <include file="$(find caster_control)/launch/teleop.launch" />
 
   <!-- Viz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/viz/view.rviz" />
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_viz)/viz/view.rviz" /> -->
 </launch>

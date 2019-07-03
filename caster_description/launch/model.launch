@@ -8,6 +8,6 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
   
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_description)/viz/model.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find caster_viz)/viz/model.rviz" />
 
 </launch>

@@ -6,7 +6,7 @@ map_frame: "map"                    # default "map"
 odom_frame: "odom"                  # default "odom"
 
 map_update_interval: 5.0            # default 5.0
-maxUrange: 80.0                     # default 80.0
+maxUrange: 10.0                     # default 80.0
 sigma: 0.05                         # default 0.05
 kernelSize: 1                       # default 1
 lstep: 0.05                         # default 0.05
@@ -40,7 +40,7 @@ llsamplestep: 0.01                  # default 0.01
 lasamplerange: 0.005                # default 0.005
 lasamplestep: 0.005                 # default 0.005
 
-transform_publish_period: 0.05      # default 0.05
+transform_publish_period: 0.02      # default 0.05
 occ_thresh: 0.25                    # default 0.25
 
-maxRange: 100                       # no default value
+maxRange: 20                       # no default value
