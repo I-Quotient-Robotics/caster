@@ -65,7 +65,7 @@
   <include file="$(find caster_control)/launch/control.launch" />
 
   <!-- Robot pose ekf -->
-<!--   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="50.0"/>
@@ -75,7 +75,7 @@
     <param name="vo_used" value="false"/>
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="false"/>
-  </node> -->
+  </node>
 
   <!--Teleop -->
   <include file="$(find caster_control)/launch/teleop.launch" />
