@@ -8,25 +8,28 @@
   <!-- AMCL -->
   <node pkg="amcl" type="amcl" name="amcl">
 
-    <param name="min_particles"             value="500"/> 
+    <param name="min_particles"             value="100"/> 
     <!-- 允许的最少粒子数 -->
     <!-- (int, default: 100) -->   
-    <param name="max_particles"             value="3000"/>
+    <param name="max_particles"             value="5000"/>
     <!-- 允许的最多粒子数 -->
     <!-- (int, default: 5000) -->
-    <param name="kld_err"                   value="0.02"/>
+    <param name="kld_err"                   value="0.01"/>
     <!-- 实际分布与估计分布之间的最大误差 -->
     <!-- (double, default: 0.01) -->
+    <param name="kld_z"                     value="0.99"/>
+    <!-- 实际分布与估计分布之间的最大误差 -->
+    <!-- (double, default: 0.01) -->    
     <param name="update_min_d"              value="0.20"/>
     <!-- 执行更新过滤器操作之前需要进行平移运动 -->
     <!-- (double, default: 0.2 meters) -->
     <param name="update_min_a"              value="0.20"/>
     <!-- 执行更新滤波器操作之前需要进行旋转运动 -->
     <!-- (double, default: π/6.0 radians) -->
-    <param name="resample_interval"         value="1"/>
+    <param name="resample_interval"         value="2"/>
     <!-- 重新采样前需要的滤波器到更新次数 -->
     <!-- (int, default: 2) -->
-    <param name="transform_tolerance"       value="0.5"/>
+    <param name="transform_tolerance"       value="0.1"/>
     <!-- tf公差，最多接受多长时间之前的数据 -->
     <!-- (double, default: 0.1 seconds) -->
     <param name="recovery_alpha_slow"       value="0.00"/>
@@ -52,28 +55,28 @@
     <param name="laser_max_range"           value="8.0"/>
     <!-- 指定最大的扫描范围 -->
     <!-- (double, default: -1.0) -->
-    <param name="laser_max_beams"           value="180"/>
+    <param name="laser_max_beams"           value="30"/>
     <!-- 在更新滤波器时，每次扫描中使用多少个均匀分布的beam -->
     <!-- (int, default: 30) -->
-    <param name="laser_z_hit"               value="0.9"/>
+    <param name="laser_z_hit"               value="0.95"/>
     <!-- 模型的z_hit部分的混合权重 -->
     <!-- (double, default: 0.95) -->
-    <param name="laser_z_short"             value="0.05"/>
+    <param name="laser_z_short"             value="0.1"/>
     <!-- 模型的z_short部分的混合权重 -->
     <!-- (double, default: 0.1) -->
     <param name="laser_z_max"               value="0.05"/>
     <!-- 模型的z_max部分的混合权重 -->
     <!-- (double, default: 0.05) -->
-    <param name="laser_z_rand"              value="0.5"/>
+    <param name="laser_z_rand"              value="0.05"/>
     <!-- 模型的z_rand部分的混合权重 -->
     <!-- (double, default: 0.05) -->
-    <param name="laser_sigma_hit"           value="0.1"/>
+    <param name="laser_sigma_hit"           value="0.2"/>
     <!-- 在z_hit部分模型中使用的高斯模型的标准差 -->
     <!-- (double, default: 0.2 meters) -->
     <param name="laser_lambda_short"        value="0.1"/>
     <!-- 模型中z_short部分的指数衰减参数 -->
     <!-- (double, default: 0.1) -->
-    <param name="laser_likelihood_max_dist" value="4.0"/> 
+    <param name="laser_likelihood_max_dist" value="2.0"/> 
     <!-- 障碍物膨胀的最大距离 -->
     <!-- (double, default: 2.0 meters) -->
     <param name="laser_model_type"          value="likelihood_field"/>
@@ -83,22 +86,22 @@
     <param name="odom_model_type"           value="diff"/>
     <!-- 使用模型 -->
     <!-- (string, default: "diff") -->
-    <param name="odom_alpha1"               value="0.1"/>
+    <param name="odom_alpha1"               value="0.2"/>
     <!-- 基于机器人运动旋转分量，来指定里程旋转估计中预期的噪声 -->
     <!-- (double, default: 0.2) -->
-    <param name="odom_alpha2"               value="0.1"/>
+    <param name="odom_alpha2"               value="0.2"/>
     <!-- 基于机器人运动旋转分量，来指定里程平移估计中预期的噪声 -->
     <!-- (double, default: 0.2) -->
-    <param name="odom_alpha3"               value="0.1"/>
+    <param name="odom_alpha3"               value="0.2"/>
     <!-- 基于机器人运动平移分量，来指定里程平移估计中预期的噪声 -->
     <!-- (double, default: 0.2) -->
-    <param name="odom_alpha4"               value="0.1"/>
+    <param name="odom_alpha4"               value="0.2"/>
     <!-- 基于机器人运动平移分量，来指定里程旋转估计中预期的噪声 -->
     <!-- (double, default: 0.2) -->
     <param name="odom_frame_id"             value="odom"/>
     <!-- 里程计使用的坐标系 -->
     <!-- (string, default: "odom") -->
-    <param name="base_frame_id"             value="base_link"/>
+    <param name="base_frame_id"             value="base_footprint"/>
     <!-- 移动基座使用的坐标系 -->
     <!-- (string, default: "base_link") -->
 

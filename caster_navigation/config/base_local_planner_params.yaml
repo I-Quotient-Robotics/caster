@@ -9,8 +9,8 @@ TrajectoryPlannerROS:
   min_in_place_vel_theta: 1.0 #原地旋转时，基座允许的最小角速度，单位 radians/sec
                               #(double, default: 0.4)
   acc_lim_x: 1.0           #机器人在x方向的最大加速度，单位meters/sec^2 (double, default: 2.5)
-  acc_lim_y: 0.0           #机器人在y方向的最大加速度，单位meters/sec^2 (double, default: 2.5)
-  acc_lim_theta: 0.6       #机器人的最大角加速度，单位radians/sec^2 (double, default: 3.2)
+  acc_lim_y: 1.0           #机器人在y方向的最大加速度，单位meters/sec^2 (double, default: 2.5)
+  acc_lim_theta: 1.0       #机器人的最大角加速度，单位radians/sec^2 (double, default: 3.2)
 
 # Goal Tolerance Parameters
   xy_goal_tolerance: 0.10  #到达目标时x&y方向允许的误差 (double, default: 0.10)

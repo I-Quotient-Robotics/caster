@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="$(find caster_navigation)/map/b300_9.yaml"/>
+  <arg name="map_file" default="$(find caster_navigation)/map/3f_v3.yaml"/>
   <arg name="rviz" default="false"/>
 
   <!-- Map server -->

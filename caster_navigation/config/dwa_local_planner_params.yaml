@@ -1,44 +1,46 @@
 DWAPlannerROS:
 
-# Robot Configuration Parameters
-  max_vel_x: 0.22               #机器人在x方向的加速度极限，单位为 meters/sec^2 (double, default: 0.55)
-  min_vel_x: -0.22              #                                        (double, default: 0.0)
-
-  max_vel_y: 0.0                #                                          (double, default: 0.1)
-  min_vel_y: 0.0                #                                          (double, default: -0.1)
+  acc_lim_x: 2.5                #x方向的加速度极限，单位为 meters/sec^2 (double, default: 2.5)
+  acc_lim_y: 0                  #                                  (double, default: 2.5)
+  acc_lim_th: 3.2               #角加速度极限，单位为 radians/sec^2 (double, default: 3.2)
 
 # The velocity when robot is moving in a straight line
-  max_trans_vel:  0.22          #机器人最大平移速度的绝对值 (double, default: 0.55)
-  min_trans_vel:  0.11          #                       (double, default: 0.1)
- 
-  max_rot_vel: 2.75             #最大角速度的绝对值，单位为 rad/s (double, default: 1.0)
-  min_rot_vel: 1.37             #                             (double, default: 0.4)
+  max_trans_vel:  0.55          #机器人最大平移速度的绝对值 (double, default: 0.55)
+  min_trans_vel:  0.1          #                       (double, default: 0.1)
 
-  acc_lim_x: 2.5                #x方向的加速度极限，单位为 meters/sec^2 (double, default: 2.5)
-  acc_lim_y: 0.0                #                                  (double, default: 2.5)
-  acc_lim_theta: 3.2            #角加速度极限，单位为 radians/sec^2 (double, default: 3.2)
+# Robot Configuration Parameters
+  max_vel_x: 0.55               #机器人在x方向的加速度极限，单位为 meters/sec^2 (double, default: 0.55)
+  min_vel_x: 0.00              #                                        (double, default: 0.0)
+
+  max_vel_y: 0                 #                                          (double, default: 0.1)
+  min_vel_y: 0                 #                                          (double, default: -0.1)
+ 
+  max_rot_vel: 1.0             #最大角速度的绝对值，单位为 rad/s (double, default: 1.0)
+  min_rot_vel: 0.4             #                             (double, default: 0.4)
 
 # Goal Tolerance Parametes 
-  xy_goal_tolerance: 0.05       #(double, default: 0.10)
-  yaw_goal_tolerance: 0.17      #(double, default: 0.05)
+  yaw_goal_tolerance: 0.05      #(double, default: 0.05)
+  xy_goal_tolerance: 0.10       #(double, default: 0.10)
   latch_xy_goal_tolerance: false #如果锁定目标公差且机器人到达目标xy位置，机器人将简单地旋转到位，即使它在目标公差的范围内结束。
                                  #(bool, default: false)
 # Forward Simulation Parameters
-  sim_time: 1.5                 #给定轨迹上的点之间的间隔尺寸，单位为 meters (double, default: 1.7)
-  vx_samples: 20                #样本数 (integer, default: 3)
-  vy_samples: 0                 #(integer, default: 10)
-  vth_samples: 40               #角速度的样本数 (integer, default: 20)
-  controller_frequency: 10.0    #调用该控制器的频率 (double, default: 20.0)
+  sim_time: 1.7                 #给定轨迹上的点之间的间隔尺寸，单位为 meters (double, default: 1.7)
+  sim_granularity: 0.025        # (double, default: 0.025)
+  vx_samples: 3                 #样本数 (integer, default: 3)
+  vy_samples: 10                 #(integer, default: 10)
+  vth_samples: 20               #角速度的样本数 (integer, default: 20)
+  controller_frequency: 15.0    #调用该控制器的频率 (double, default: 20.0)
 
 # Trajectory Scoring Parameters
   path_distance_bias: 32.0      #控制器靠近给定路径的权重 (double, default: 32.0)
-  goal_distance_bias: 20.0      # 控制器尝试达到其本地目标and控制着速度的权重。(double, default: 24.0)
-  occdist_scale: 0.02           #控制器尝试避免障碍物的权重 (double, default: 0.01)
+  goal_distance_bias: 24.0      # 控制器尝试达到其本地目标and控制着速度的权重。(double, default: 24.0)
+  occdist_scale: 0.01           #控制器尝试避免障碍物的权重 (double, default: 0.01)
   forward_point_distance: 0.325 #从机器人中心点到另一个得分点的距离 (double, default: 0.325)
   stop_time_buffer: 0.2         #机器人在碰撞前必须停止的时间 (double, default: 0.2)
   scaling_speed: 0.25           #缩放机器人足迹的速度的绝对值，单位为m/s (double, default: 0.25)
   max_scaling_factor: 0.2       #缩放机器人足迹的最大因子 (double, default: 0.2)
- 
+  publish_cost_grid: false      # (bool, default: false)
+
 # Oscillation Prevention Parameters
   oscillation_reset_dist: 0.05  #机器人必须运动多少米远后才能复位震荡标记 (double, default: 0.05)
 

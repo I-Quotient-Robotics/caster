@@ -1,7 +1,7 @@
 inverted_laser: false               # default "false"
 throttle_scans: 1                   # default 1
 
-base_frame: "base_link"             # default "base_link"
+base_frame: "base_footprint"        # default "base_link"
 map_frame: "map"                    # default "map"
 odom_frame: "odom"                  # default "odom"
 
