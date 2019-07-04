@@ -1,0 +1,13 @@
+obstacle_range: 2.5 #检测障碍物的最大范围
+raytrace_range: 3.0 #检测自由空间的最大范围
+footprint: [[-0.105, -0.105], [-0.105, 0.105], [0.041, 0.105], [0.041, -0.105]]
+#robot_radius: ir_of_robot
+inflation_radius: 2.0
+
+
+observation_sources: laser_scan_sensor #需要关注的所有传感器信息
+
+laser_scan_sensor: {sensor_frame: laser_link, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+
+#cost_scaling_factor: 3.0
+#map_type: costmap

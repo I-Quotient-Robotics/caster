@@ -1,5 +1,21 @@
 <?xml version="1.0"?>
-
 <launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find caster_navigation)/map/b300_9.yaml"/>
+  <arg name="rviz" default="false"/>
 
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <include file="$(find caster_navigation)/launch/amcl.launch.xml"/>
+
+  <!-- move_base -->
+  <include file="$(find caster_navigation)/launch/move_base.launch.xml">
+  </include>
+
+  <!-- rviz -->
+  <group if="$(arg rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find caster_viz)/viz/navigation.rviz"/>
+  </group>
 </launch>

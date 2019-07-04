@@ -1,0 +1,10 @@
+global_costmap:
+  global_frame: /map               #参考系        (string, default: "/map")
+  robot_base_frame: base_link      #             (string, default: "base_link")
+
+  update_frequency: 5.0           #             (double, default: 5.0)
+  publish_frequency: 10.0          #             (double, default: 0.0)
+  transform_tolerance: 0.5         #             (double, default: 0.2)
+
+  static_map: true
+ 
