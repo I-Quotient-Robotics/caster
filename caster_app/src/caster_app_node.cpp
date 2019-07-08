@@ -4,8 +4,8 @@
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "caster_app_node");
-  ros::NodeHandle n("~");
-  iqr::DockServer dock_server(n, "dock");
+  ros::NodeHandle nh, private_nh("~");
+  iqr::DockServer dock_server(nh, private_nh, "dock");
   dock_server.Initialize();
 
   ros::Duration period(0.02);
