@@ -7,6 +7,8 @@
 
 #include <tf/transform_listener.h>
 
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
 #include <move_base_msgs/MoveBaseAction.h>
 
 #include <caster_app/DockAction.h>
@@ -14,6 +16,8 @@
 namespace iqr {
 class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
   private:
+    bool docked_;
+
     std::string action_name_;
 
     ros::NodeHandle nh_;
@@ -30,6 +34,16 @@ class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
 
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> move_base_client_;
 
+
+    /* parameter */
+    float dock_speed_;
+    float dock_distance_;
+    std::string map_frame_;
+    std::string odom_frame_;
+    std::string base_frame_;
+
+    geometry_msgs::Pose dock_ready_pose_;
+
     void GoalCallback(GoalHandle gh);
     void CancelCallback(GoalHandle gh);
 
@@ -37,6 +51,7 @@ class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
     void MovebaseFeedbackCallback(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback);
     void MovebaseDoneCallback(const actionlib::SimpleClientGoalState& state, const move_base_msgs::MoveBaseResultConstPtr& result);
 
+    void UnDock();
     void MoveToDock();
     void MoveToDockReady();
 
@@ -46,6 +61,8 @@ class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
     DockServer(ros::NodeHandle &nh, ros::NodeHandle &private_nh, const std::string & server_name);
 
     void Initialize();
+
+    bool docked() { return docked_; };
 
 };
 } // namespace iqr

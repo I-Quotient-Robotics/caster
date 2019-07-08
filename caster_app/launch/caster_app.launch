@@ -2,5 +2,6 @@
 <launch>
   <!-- Caster app -->
   <node pkg="caster_app" type="caster_app_node" name="caster_app_node" output="screen">
+    <rosparam file="$(find caster_app)/config/caster_app.yaml" command="load" />
   </node>
 </launch>

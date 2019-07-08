@@ -1,0 +1,7 @@
+map_frame: map
+odom_frame: map
+base_frame: base_footprint
+
+dock:
+  dock_speed: 0.05
+  dock_distance: 1.0
