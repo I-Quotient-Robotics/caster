@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Caster app -->
+  <node pkg="caster_app" type="caster_app_node" name="caster_app_node" output="screen">
+  </node>
+</launch>

@@ -1,0 +1,8 @@
+# Define the goal
+bool dock
+---
+# Define the result
+string dock_result
+---
+# Define a feedback message
+string dock_feedback
