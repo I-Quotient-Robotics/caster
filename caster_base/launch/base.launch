@@ -54,11 +54,13 @@
     <param name="port" type="string" value="/dev/caster_us"/>
     <param name="baudrate" type="int" value="9600"/>
     <param name="frequency" type="int" value="10"/>
+    <param name="min_range" type="double" value="0.20" />
+    <param name="max_range" type="double" value="1.50" />
     <param name="topic" type="string" value="us"/>
-    <param name="us1_frame_id" type="string" value="ultrasonic_front_left_link"/>
-    <param name="us2_frame_id" type="string" value="ultrasonic_front_right_link"/>
-    <param name="us3_frame_id" type="string" value="ultrasonic_rear_right_link"/>
-    <param name="us4_frame_id" type="string" value="ultrasonic_rear_left_link"/>
+    <param name="us1_id" type="string" value="ultrasonic_front_left"/>
+    <param name="us2_id" type="string" value="ultrasonic_front_right"/>
+    <param name="us3_id" type="string" value="ultrasonic_rear_right"/>
+    <param name="us4_id" type="string" value="ultrasonic_rear_left"/>
   </node>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="$(arg log_type)"/>
