@@ -39,13 +39,13 @@
   </node>
 
   <!-- BMS driver -->
-<!--   <node pkg="hongfu_bms_driver" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="screen">
-    <param name="port" type="string" value="/dev/hongfu_bms" />
-    <param name="frame_id" type="string"value="hongfu_bms"  />
+  <node pkg="hongfu_bms_status" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="screen">
+    <param name="port" type="string" value="/dev/caster_bms" />
+    <param name="frame_id" type="string" value= "hongfu_bms" />
     <param name="baudrate" type="int" value="9600" />
     <param name="looprate" type="int" value="1" />
     <remap from="/hongfu_bms_status/hongfu_bms" to="/bms"/>
-  </node> -->
+  </node>
 
   <!-- Ultrasonic sensor driver -->
 <!--   <node pkg="dauxi_ks106" type="dauxi_ks106_node" name="dauxi_ks106_node" output="screen">

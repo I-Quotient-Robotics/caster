@@ -48,9 +48,10 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
   RegisterControlInterfaces();
 
   diagnostic_updater_.setHardwareID("caster_robot");
-  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::MotorCheck);
-  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::StatusCheck);
-  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::ControllerCheck);
+  diagnostic_updater_.add("Left motor", this, &iqr::CasterHardware::LeftMotorCheck);
+  diagnostic_updater_.add("Right motor", this, &iqr::CasterHardware::RightMotorCheck);
+  diagnostic_updater_.add("Status", this, &iqr::CasterHardware::StatusCheck);
+  diagnostic_updater_.add("Controller", this, &iqr::CasterHardware::ControllerCheck);
 
   // Clear();
 
@@ -58,7 +59,7 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
   ROS_INFO("caster base initialized");
 }
 
-void iqr::CasterHardware::MotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
+void iqr::CasterHardware::LeftMotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
   /* request motor flags 
    * f1 = Amps Limit currently active
    * f2 = Motor stalled
@@ -68,30 +69,75 @@ void iqr::CasterHardware::MotorCheck(diagnostic_updater::DiagnosticStatusWrapper
    * f6 = Reverse Limit triggered
    * f7 = Amps Trigger activated
   */
+
+  status.add("rpm", motor_status_[kLeftMotor].rpm);
+  status.add("counter", motor_status_[kLeftMotor].counter);
+
+  // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
+
   status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
-  if(fault_flags_&0x01 == 0x01) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overheat");
+  if((motor_status_[kLeftMotor].status)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Amps Limit currently active");
   }
-  if(fault_flags_&0x02 == 0x02) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overvoltage");
+  if((motor_status_[kLeftMotor].status>>1)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Motor stalled");
   }
-  if(fault_flags_&0x04 == 0x04) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Undervoltage");
+  if((motor_status_[kLeftMotor].status>>2)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Loop Error detected");
   }
-  if(fault_flags_&0x08 == 0x08) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Short circuit");
+  //if(motor_status_[kLeftMotor].status&0x08 == 0x08) {
+  if((motor_status_[kLeftMotor].status>>3)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Safety Stop active");
   }
-  if(fault_flags_&0x10 == 0x10) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Emergency stop");
+  if((motor_status_[kLeftMotor].status>>4)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Forward Limit triggered");
   }
-  if(fault_flags_&0x20 == 0x20) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Brushless sensor fault");
+  if((motor_status_[kLeftMotor].status>>5)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Reverse Limit triggered");
   }
-  if(fault_flags_&0x40 == 0x40) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "MOSFET failure");
+  if((motor_status_[kLeftMotor].status>>6)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Amps Trigger activated");
   }
-  if(fault_flags_&0x80 == 0x80) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Default configuration loaded at startup");
+}
+
+void iqr::CasterHardware::RightMotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
+  /* request motor flags 
+   * f1 = Amps Limit currently active
+   * f2 = Motor stalled
+   * f3 = Loop Error detected
+   * f4 = Safety Stop active
+   * f5 = Forward Limit triggered
+   * f6 = Reverse Limit triggered
+   * f7 = Amps Trigger activated
+  */
+
+  status.add("rpm", motor_status_[kRightMotor].rpm);
+  status.add("counter", motor_status_[kRightMotor].counter);
+
+  // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
+
+  status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
+  if((motor_status_[kRightMotor].status)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Amps Limit currently active");
+  }
+  if((motor_status_[kRightMotor].status>>1)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Motor stalled");
+  }
+  if((motor_status_[kRightMotor].status>>2)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Loop Error detected");
+  }
+  //if(motor_status_[kLeftMotor].status&0x08 == 0x08) {
+  if((motor_status_[kRightMotor].status>>3)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Safety Stop active");
+  }
+  if((motor_status_[kRightMotor].status>>4)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Forward Limit triggered");
+  }
+  if((motor_status_[kRightMotor].status>>5)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Reverse Limit triggered");
+  }
+  if((motor_status_[kRightMotor].status>>6)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Amps Trigger activated");
   }
 }
 
@@ -107,42 +153,39 @@ void iqr::CasterHardware::StatusCheck(diagnostic_updater::DiagnosticStatusWrappe
    * f8 = MicroBasic script running
   */
 
-  status.add("Left motor rpm", motor_status_[kLeftMotor].rpm);
-  status.add("Left motor counter", motor_status_[kLeftMotor].counter);
+  std::string contorl_mode = "unknown";
 
-  status.add("Right motor rpm", motor_status_[kRightMotor].rpm);
-  status.add("Right motor counter", motor_status_[kRightMotor].counter);
+  if((status_flags_)&0x01 == 0x01) {
+    contorl_mode = "Serial mode";
+  }
+  if((status_flags_>>1)&0x01 == 0x01) {
+    contorl_mode = "Pulse mode";
+  }
+  if((status_flags_>>2)&0x01 == 0x01) {
+    contorl_mode = "Analog mode";
+  }
 
-  // motor_status_[kLeftMotor].status = msg->data[4];
-  // motor_status_[kRightMotor].status = msg->data[5];
+  status.add("Control mode", contorl_mode);
 
-  // for(int i=0; i<2; i++) {
-  //   status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
-  //   if(status_flags_&0x01 == 0x01) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Serial mode");
-  //   }
-  //   if(status_flags_&0x02 == 0x02) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Pulse mode");
-  //   }
-  //   if(status_flags_&0x04 == 0x04) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Analog mode");
-  //   }
-  //   if(status_flags_&0x08 == 0x08) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Power stage off");
-  //   }
-  //   if(status_flags_&0x10 == 0x10) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Stall detected");
-  //   }
-  //   if(status_flags_&0x20 == 0x20) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "At limit");
-  //   }
-  //   if(status_flags_&0x40 == 0x40) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Unused");
-  //   }
-  //   if(status_flags_&0x80 == 0x80) {
-  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "MicroBasic script running");
-  //   }
-  // }
+  status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
+  if(contorl_mode == "unknown") {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "unknown control mode");
+  }
+  if((status_flags_>>3)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Power stage off");
+  }
+  if((status_flags_>>4)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Stall detected");
+  }
+  if((status_flags_>>5)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "At limit");
+  }
+  if((status_flags_>>6)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Unused");
+  }
+  if((status_flags_>>7)&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "MicroBasic script running");
+  }
 }
 
 void iqr::CasterHardware::ControllerCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
@@ -156,29 +199,30 @@ void iqr::CasterHardware::ControllerCheck(diagnostic_updater::DiagnosticStatusWr
    * f7 = MOSFET failure
    * f8 = Default configuration loaded at startup
   */
+
   status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
-  if(fault_flags_&0x01 == 0x01) {
+  if((fault_flags_)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overheat");
   }
-  if(fault_flags_&0x02 == 0x02) {
+  if((fault_flags_>>1)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overvoltage");
   }
-  if(fault_flags_&0x04 == 0x04) {
+  if((fault_flags_>>2)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Undervoltage");
   }
-  if(fault_flags_&0x08 == 0x08) {
+  if((fault_flags_>>3)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Short circuit");
   }
-  if(fault_flags_&0x10 == 0x10) {
+  if((fault_flags_>>4)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Emergency stop");
   }
-  if(fault_flags_&0x20 == 0x20) {
+  if((fault_flags_>>5)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Brushless sensor fault");
   }
-  if(fault_flags_&0x40 == 0x40) {
+  if((fault_flags_>>6)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "MOSFET failure");
   }
-  if(fault_flags_&0x80 == 0x80) {
+  if((fault_flags_>>7)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Default configuration loaded at startup");
   }
 }
@@ -220,8 +264,9 @@ void iqr::CasterHardware::CanReceiveCallback(const can_msgs::Frame::ConstPtr& ms
           break;
         }
         case kReadMotorStatusFlags: {
+          /* TODO: the index of data is different from doc */
           motor_status_[kLeftMotor].status = msg->data[4];
-          motor_status_[kRightMotor].status = msg->data[5];
+          motor_status_[kRightMotor].status = msg->data[6];
           // ROS_INFO("Query response, motor status flags %s: %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str(), ToBinary(motor_status_[kRightMotor].status, 1).c_str());
           break;
         }

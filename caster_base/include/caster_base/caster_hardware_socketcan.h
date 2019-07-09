@@ -93,7 +93,8 @@ class CasterHardware : public hardware_interface::RobotHW {
 
     void ControllerTimerCallback(const ros::TimerEvent&);
 
-    void MotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
+    void LeftMotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
+    void RightMotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
     void StatusCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
     void ControllerCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
 

@@ -1,0 +1,2 @@
+KERNEL=="ttyUSB[0-9]",ATTRS{idVendor}=="10c4",ATTRS{idProduct}=="ea60", ATTRS{serial}=="0125", MODE:="0777", SYMLINK+="caster_us"
+KERNEL=="ttyUSB[0-9]",ATTRS{idVendor}=="10c4",ATTRS{idProduct}=="ea60", ATTRS{serial}=="0126", MODE:="0777", SYMLINK+="caster_bms"
