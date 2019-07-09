@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="log_type" default="screen"/>
+
   <!-- Caster description -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find caster_description)/urdf/caster.urdf.xacro" />
 
   <!-- Socketcan bridge -->
-  <node pkg="socketcan_bridge" type="socketcan_bridge_node" name="socketcan_bridge_node" output="screen">
+  <node pkg="socketcan_bridge" type="socketcan_bridge_node" name="socketcan_bridge_node" output="$(arg log_type)">
     <param name="can_device" type="string" value="can0" />
   </node>
 
   <!-- Caster driver -->
-  <node pkg="caster_base" type="caster_base_socketcan_node" name="caster_base_node" output="screen">
+  <node pkg="caster_base" type="caster_base_socketcan_node" name="caster_base_node" output="$(arg log_type)">
     <param name="can_send_topic" type="string" value="sent_messages" />
     <param name="can_receive_topic" type="string" value="received_messages" />
     <param name="can_id" type="int" value="1" />
@@ -20,7 +22,7 @@
   </node>
 
   <!-- Imu driver -->
-  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen" >
+  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="$(arg log_type)" >
     <param name="baudrate" type="int" value="115200" />
     <param name="port" type="string" value="/dev/jy901" />
     <param name="looprate" type="int" value="40" />
@@ -28,18 +30,18 @@
   </node>
 
   <!-- Laser driver -->
-  <node pkg="urg_node" type="urg_node" name="urg_node" output="screen">
+  <node pkg="urg_node" type="urg_node" name="urg_node" output="$(arg log_type)">
     <param name="ip_address" value="192.168.33.7"/>
     <param name="frame_id" value="laser_link"/>
-    <param name="calibrate_time" value="true"/>
+    <param name="calibrate_time" value="false"/>
     <param name="publish_intensity" value="true"/>
     <param name="publish_multiecho" value="false"/>
-    <param name="angle_min" value="-1.5707963"/>
-    <param name="angle_max" value="1.5707963"/>
+    <param name="angle_min" value="-1.4835299"/>
+    <param name="angle_max" value="1.4835299"/>
   </node>
 
   <!-- BMS driver -->
-  <node pkg="hongfu_bms_status" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="screen">
+  <node pkg="hongfu_bms_status" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="$(arg log_type)">
     <param name="port" type="string" value="/dev/caster_bms" />
     <param name="frame_id" type="string" value= "hongfu_bms" />
     <param name="baudrate" type="int" value="9600" />
@@ -48,24 +50,26 @@
   </node>
 
   <!-- Ultrasonic sensor driver -->
-<!--   <node pkg="dauxi_ks106" type="dauxi_ks106_node" name="dauxi_ks106_node" output="screen">
-    <param name="port" type="string" value="/dev/dauxi_ks106"/>
+  <node pkg="dauxi_ks106" type="dauxi_ks106_node" name="dauxi_ks106_node" output="screen">
+    <param name="port" type="string" value="/dev/caster_us"/>
     <param name="baudrate" type="int" value="9600"/>
     <param name="frequency" type="int" value="10"/>
     <param name="topic" type="string" value="us"/>
-    <param name="us1_frame_id" type="string" value="ks106_us1"/>
-    <param name="us2_frame_id" type="string" value="ks106_us2"/>
-    <param name="us3_frame_id" type="string" value="ks106_us3"/>
-    <param name="us4_frame_id" type="string" value="ks106_us4"/>
-  </node> -->
+    <param name="us1_frame_id" type="string" value="ultrasonic_front_left_link"/>
+    <param name="us2_frame_id" type="string" value="ultrasonic_front_right_link"/>
+    <param name="us3_frame_id" type="string" value="ultrasonic_rear_right_link"/>
+    <param name="us4_frame_id" type="string" value="ultrasonic_rear_left_link"/>
+  </node>
 
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="$(arg log_type)"/>
 
   <!-- Caster controller -->
-  <include file="$(find caster_control)/launch/control.launch" />
-
+  <include file="$(find caster_control)/launch/control.launch">
+    <arg name="log_type" value="$(arg log_type)"/>
+  </include>
+  
   <!-- Robot pose ekf -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="$(arg log_type)">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="50.0"/>

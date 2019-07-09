@@ -153,15 +153,15 @@
 
   <!-- Ultrasonic link-->
   <xacro:ultrasonic parent="base_link" location="front_left">
-    <origin xyz="0.25 0.075 0.07" rpy="0 0 0" />
+    <origin xyz="0.26248 0.0704 0.0245" rpy="0 0 0.2618" />
   </xacro:ultrasonic>
   <xacro:ultrasonic parent="base_link" location="front_right">
-    <origin xyz="0.25 -0.075 0.07" rpy="0 0 0" />
+    <origin xyz="0.26248 -0.0704 0.0245" rpy="0 0 -0.2618" />
   </xacro:ultrasonic>
   <xacro:ultrasonic parent="base_link" location="rear_left">
-    <origin xyz="-0.255 0.055 0.205" rpy="0 0 ${M_PI}" />
+    <origin xyz="-0.26298 0.0704 0.2095" rpy="0 0 2.8798" />
   </xacro:ultrasonic>
   <xacro:ultrasonic parent="base_link" location="rear_right">
-    <origin xyz="-0.255 -0.055 0.205" rpy="0 0 ${M_PI}" />
+    <origin xyz="-0.26298 -0.0704 0.2095" rpy="0 0 -2.8798" />
   </xacro:ultrasonic>
 </robot>

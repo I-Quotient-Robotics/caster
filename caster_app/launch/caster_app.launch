@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="log_type" default="screen"/>
+
   <!-- Caster app -->
-  <node pkg="caster_app" type="caster_app_node" name="caster_app_node" output="screen">
+  <node pkg="caster_app" type="caster_app_node" name="caster_app_node" output="$(arg log_type)">
     <rosparam file="$(find caster_app)/config/caster_app.yaml" command="load" />
   </node>
 </launch>

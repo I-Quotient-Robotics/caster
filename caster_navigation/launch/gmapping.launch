@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
+  <arg name="log_type" default="screen"/>
   <arg name="move_base" default="false"/>
 
-  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping_node" respawn="false" output="screen">
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping_node" respawn="false" output="$(arg log_type)">
     <rosparam file="$(find caster_navigation)/config/gmapping.yaml" command="load" />
   </node>
 
   <group if="$(arg move_base)">
-    <node pkg="move_base" type="move_base" name="move_base_node" respawn="false" output="screen">
+    <node pkg="move_base" type="move_base" name="move_base_node" respawn="false" output="$(arg log_type)">
     </node>
   </group>
 </launch>
