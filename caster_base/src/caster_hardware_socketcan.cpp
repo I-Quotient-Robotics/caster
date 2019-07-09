@@ -71,6 +71,7 @@ void iqr::CasterHardware::LeftMotorCheck(diagnostic_updater::DiagnosticStatusWra
   */
 
   status.add("rpm", motor_status_[kLeftMotor].rpm);
+  status.add("current (A)", motor_status_[kLeftMotor].current);
   status.add("counter", motor_status_[kLeftMotor].counter);
 
   // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
@@ -111,8 +112,9 @@ void iqr::CasterHardware::RightMotorCheck(diagnostic_updater::DiagnosticStatusWr
    * f7 = Amps Trigger activated
   */
 
-  status.add("rpm", motor_status_[kRightMotor].rpm);
-  status.add("counter", motor_status_[kRightMotor].counter);
+  status.add("current (A)", motor_status_[kRightMotor].current);
+  status.add("speed (round/mintue)", motor_status_[kRightMotor].rpm);
+  // status.add("counter", motor_status_[kRightMotor].counter);
 
   // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
 
@@ -126,7 +128,6 @@ void iqr::CasterHardware::RightMotorCheck(diagnostic_updater::DiagnosticStatusWr
   if((motor_status_[kRightMotor].status>>2)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Loop Error detected");
   }
-  //if(motor_status_[kLeftMotor].status&0x08 == 0x08) {
   if((motor_status_[kRightMotor].status>>3)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Safety Stop active");
   }
@@ -239,6 +240,13 @@ void iqr::CasterHardware::CanReceiveCallback(const can_msgs::Frame::ConstPtr& ms
       // ROS_INFO("Response: query %02X,%02X successful", index, sub_index);
 
       switch (index) {
+        case kReadMotorAmps: {
+          int16_t temp_current_x10;
+          memcpy(&temp_current_x10, msg->data.data()+4, 2);
+          motor_status_[sub_index-1].current = temp_current_x10 / 10.0;
+          // ROS_INFO("Query response, motor current %d: %f", sub_index, motor_status_[sub_index-1].current);
+          break;
+        }
         case kReadAbsBLCounter: {
           memcpy(&motor_status_[sub_index-1].counter, msg->data.data()+4, 4);
           if(motor_status_[sub_index-1].counter_reset == false) {
@@ -320,6 +328,9 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   success = Query(kReadMotorStatusFlags, 0x01, 4);
   // left_motor_flag = data;
   // right_motor_flag = data >> 16;
+
+  success = Query(kReadMotorAmps, 0x01, 4);
+  success = Query(kReadMotorAmps, 0x02, 4);
 
   joints_[kLeftMotor].velocity = motor_status_[kLeftMotor].rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0;
   joints_[kRightMotor].velocity = motor_status_[kRightMotor].rpm / 60.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;

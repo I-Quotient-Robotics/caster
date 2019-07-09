@@ -60,6 +60,7 @@ class CasterHardware : public hardware_interface::RobotHW {
       kSetBLCounter = 0x2004,
 
       /* runtime queries */
+      kReadMotorAmps = 0x2100,
       kReadAbsBLCounter = 0x2105,
       kReadBLMotorRPM = 0x210A,
       kReadStatusFlags = 0x2111,
@@ -68,6 +69,7 @@ class CasterHardware : public hardware_interface::RobotHW {
     };
 
     struct MotorStatus {
+      float current;
       int16_t rpm;
       int32_t counter;
       int32_t counter_offset;
