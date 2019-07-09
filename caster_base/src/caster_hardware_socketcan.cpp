@@ -47,10 +47,140 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
 
   RegisterControlInterfaces();
 
+  diagnostic_updater_.setHardwareID("caster_robot");
+  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::MotorCheck);
+  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::StatusCheck);
+  diagnostic_updater_.add("Method updater", this, &iqr::CasterHardware::ControllerCheck);
+
   // Clear();
 
   ROS_INFO("can_pub: %s, can_sub: %s, can_id: %d", send_topic_.c_str(), receive_topic_.c_str(), can_id_);
   ROS_INFO("caster base initialized");
+}
+
+void iqr::CasterHardware::MotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
+  /* request motor flags 
+   * f1 = Amps Limit currently active
+   * f2 = Motor stalled
+   * f3 = Loop Error detected
+   * f4 = Safety Stop active
+   * f5 = Forward Limit triggered
+   * f6 = Reverse Limit triggered
+   * f7 = Amps Trigger activated
+  */
+  status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
+  if(fault_flags_&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overheat");
+  }
+  if(fault_flags_&0x02 == 0x02) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overvoltage");
+  }
+  if(fault_flags_&0x04 == 0x04) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Undervoltage");
+  }
+  if(fault_flags_&0x08 == 0x08) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Short circuit");
+  }
+  if(fault_flags_&0x10 == 0x10) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Emergency stop");
+  }
+  if(fault_flags_&0x20 == 0x20) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Brushless sensor fault");
+  }
+  if(fault_flags_&0x40 == 0x40) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "MOSFET failure");
+  }
+  if(fault_flags_&0x80 == 0x80) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Default configuration loaded at startup");
+  }
+}
+
+void iqr::CasterHardware::StatusCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
+  /* request status flags 
+   * f1 = Serial mode
+   * f2 = Pulse mode
+   * f3 = Analog mode
+   * f4 = Power stage off
+   * f5 = Stall detected
+   * f6 = At limit
+   * f7 = Unused
+   * f8 = MicroBasic script running
+  */
+
+  status.add("Left motor rpm", motor_status_[kLeftMotor].rpm);
+  status.add("Left motor counter", motor_status_[kLeftMotor].counter);
+
+  status.add("Right motor rpm", motor_status_[kRightMotor].rpm);
+  status.add("Right motor counter", motor_status_[kRightMotor].counter);
+
+  // motor_status_[kLeftMotor].status = msg->data[4];
+  // motor_status_[kRightMotor].status = msg->data[5];
+
+  // for(int i=0; i<2; i++) {
+  //   status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
+  //   if(status_flags_&0x01 == 0x01) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Serial mode");
+  //   }
+  //   if(status_flags_&0x02 == 0x02) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Pulse mode");
+  //   }
+  //   if(status_flags_&0x04 == 0x04) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "Analog mode");
+  //   }
+  //   if(status_flags_&0x08 == 0x08) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Power stage off");
+  //   }
+  //   if(status_flags_&0x10 == 0x10) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Stall detected");
+  //   }
+  //   if(status_flags_&0x20 == 0x20) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "At limit");
+  //   }
+  //   if(status_flags_&0x40 == 0x40) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Unused");
+  //   }
+  //   if(status_flags_&0x80 == 0x80) {
+  //     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::OK, "MicroBasic script running");
+  //   }
+  // }
+}
+
+void iqr::CasterHardware::ControllerCheck(diagnostic_updater::DiagnosticStatusWrapper& status) {
+  /* request fault flags
+   * f1 = Overheat
+   * f2 = Overvoltage
+   * f3 = Undervoltage
+   * f4 = Short circuit
+   * f5 = Emergency stop
+   * f6 = Brushless sensor fault
+   * f7 = MOSFET failure
+   * f8 = Default configuration loaded at startup
+  */
+  status.summary(diagnostic_msgs::DiagnosticStatus::OK, "OK");
+  if(fault_flags_&0x01 == 0x01) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overheat");
+  }
+  if(fault_flags_&0x02 == 0x02) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Overvoltage");
+  }
+  if(fault_flags_&0x04 == 0x04) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Undervoltage");
+  }
+  if(fault_flags_&0x08 == 0x08) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Short circuit");
+  }
+  if(fault_flags_&0x10 == 0x10) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Emergency stop");
+  }
+  if(fault_flags_&0x20 == 0x20) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Brushless sensor fault");
+  }
+  if(fault_flags_&0x40 == 0x40) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "MOSFET failure");
+  }
+  if(fault_flags_&0x80 == 0x80) {
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Default configuration loaded at startup");
+  }
 }
 
 void iqr::CasterHardware::CanReceiveCallback(const can_msgs::Frame::ConstPtr& msg) {
@@ -132,43 +262,14 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
   success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kLeftMotor+1), 4);
   success = Query(kReadAbsBLCounter, static_cast<uint8_t>(kRightMotor+1), 4);
 
-  /* request status flags 
-   * f1 = Serial mode
-   * f2 = Pulse mode
-   * f3 = Analog mode
-   * f4 = Power stage off
-   * f5 = Stall detected
-   * f6 = At limit
-   * f7 = Unused
-   * f8 = MicroBasic script running
-  */
   // uint8_t status_flag;
   success = Query(kReadStatusFlags, 0x00, 1);
   // status_flag = static_cast<uint8_t>(data);
 
-  /* request fault flags
-   * f1 = Overheat
-   * f2 = Overvoltage
-   * f3 = Undervoltage
-   * f4 = Short circuit
-   * f5 = Emergency stop
-   * f6 = Brushless sensor fault
-   * f7 = MOSFET failure
-   * f8 = Default configuration loaded at startup
-  */
   // uint8_t fault_flag;
   success = Query(kReadFaultFlags, 0x00, 1);
   // fault_flag = static_cast<uint8_t>(data);
 
-  /* request motor flags 
-   * f1 = Amps Limit currently active
-   * f2 = Motor stalled
-   * f3 = Loop Error detected
-   * f4 = Safety Stop active
-   * f5 = Forward Limit triggered
-   * f6 = Reverse Limit triggered
-   * f7 = Amps Trigger activated
-  */
   /* TODO: strange rules for opencan id */
   // uint8_t left_motor_flag, right_motor_flag;
   success = Query(kReadMotorStatusFlags, 0x01, 4);
@@ -180,6 +281,8 @@ void iqr::CasterHardware::UpdateHardwareStatus() {
 
   joints_[kLeftMotor].position = (motor_status_[kLeftMotor].counter-motor_status_[kLeftMotor].counter_offset) / 30.0 / REDUCTION_RATIO * M_PI * 2.0;
   joints_[kRightMotor].position = (motor_status_[kRightMotor].counter-motor_status_[kRightMotor].counter_offset) / 30.0 / REDUCTION_RATIO * M_PI * 2.0 * -1.0;
+
+  diagnostic_updater_.update();
 
   // ROS_INFO("motor counter: %d, %d, %d, %d", motor_status_[kLeftMotor].counter, motor_status_[kRightMotor].counter, motor_status_[kLeftMotor].rpm, motor_status_[kRightMotor].rpm);
   // ROS_INFO("motor counter: %f, %f, %d, %d", joints_[0].position, joints_[1].position, l_rpm, r_rpm);

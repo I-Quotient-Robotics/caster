@@ -8,14 +8,16 @@
 
 #include <sys/types.h>
 
-#include "ros/ros.h"
-#include "can_msgs/Frame.h"
-#include "sensor_msgs/JointState.h"
-#include "controller_manager/controller_manager.h"
+#include <ros/ros.h>
+#include <can_msgs/Frame.h>
+#include <sensor_msgs/JointState.h>
+#include <controller_manager/controller_manager.h>
 
-#include "hardware_interface/robot_hw.h"
-#include "hardware_interface/joint_state_interface.h"
-#include "hardware_interface/joint_command_interface.h"
+#include <diagnostic_updater/diagnostic_updater.h>
+
+#include <hardware_interface/robot_hw.h>
+#include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/joint_command_interface.h>
 
 #define REDUCTION_RATIO                 15.0
 
@@ -91,6 +93,10 @@ class CasterHardware : public hardware_interface::RobotHW {
 
     void ControllerTimerCallback(const ros::TimerEvent&);
 
+    void MotorCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
+    void StatusCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
+    void ControllerCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
+
     std::string node_name_;
 
     ros::NodeHandle nh_;
@@ -109,6 +115,9 @@ class CasterHardware : public hardware_interface::RobotHW {
     // ROS Control interfaces
     hardware_interface::JointStateInterface joint_state_interface_;
     hardware_interface::VelocityJointInterface velocity_joint_interface_;
+
+    // diagnostic  update
+    diagnostic_updater::Updater diagnostic_updater_;
 
     int can_id_;
 
