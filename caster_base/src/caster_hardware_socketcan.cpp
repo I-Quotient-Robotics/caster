@@ -70,9 +70,8 @@ void iqr::CasterHardware::LeftMotorCheck(diagnostic_updater::DiagnosticStatusWra
    * f7 = Amps Trigger activated
   */
 
-  status.add("rpm", motor_status_[kLeftMotor].rpm);
   status.add("current (A)", motor_status_[kLeftMotor].current);
-  status.add("counter", motor_status_[kLeftMotor].counter);
+  status.add("speed (RPM)", motor_status_[kLeftMotor].rpm);
 
   // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
 
@@ -88,7 +87,7 @@ void iqr::CasterHardware::LeftMotorCheck(diagnostic_updater::DiagnosticStatusWra
   }
   //if(motor_status_[kLeftMotor].status&0x08 == 0x08) {
   if((motor_status_[kLeftMotor].status>>3)&0x01 == 0x01) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Safety Stop active");
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Safety Stop active");
   }
   if((motor_status_[kLeftMotor].status>>4)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Forward Limit triggered");
@@ -113,7 +112,7 @@ void iqr::CasterHardware::RightMotorCheck(diagnostic_updater::DiagnosticStatusWr
   */
 
   status.add("current (A)", motor_status_[kRightMotor].current);
-  status.add("speed (round/mintue)", motor_status_[kRightMotor].rpm);
+  status.add("speed (RPM)", motor_status_[kRightMotor].rpm);
   // status.add("counter", motor_status_[kRightMotor].counter);
 
   // ROS_INFO("motor %s", ToBinary(motor_status_[kLeftMotor].status, 1).c_str());
@@ -129,7 +128,7 @@ void iqr::CasterHardware::RightMotorCheck(diagnostic_updater::DiagnosticStatusWr
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Loop Error detected");
   }
   if((motor_status_[kRightMotor].status>>3)&0x01 == 0x01) {
-    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Safety Stop active");
+    status.mergeSummary(diagnostic_msgs::DiagnosticStatus::WARN, "Safety Stop active");
   }
   if((motor_status_[kRightMotor].status>>4)&0x01 == 0x01) {
     status.mergeSummary(diagnostic_msgs::DiagnosticStatus::ERROR, "Forward Limit triggered");
