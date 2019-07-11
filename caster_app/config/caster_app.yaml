@@ -1,3 +1,4 @@
+debug: true
 map_frame: map
 odom_frame: map
 base_frame: base_footprint

@@ -4,6 +4,7 @@ iqr::DockServer::DockServer(ros::NodeHandle &nh, ros::NodeHandle &private_nh, co
     : action_name_(server_name),
       nh_(nh),
       private_nh_(private_nh),
+      perception_(private_nh),
       move_base_client_("move_base", true),
       actionlib::ActionServer<caster_app::DockAction>(private_nh, server_name,
           boost::bind(&DockServer::GoalCallback, this, _1),
@@ -33,7 +34,7 @@ iqr::DockServer::DockServer(ros::NodeHandle &nh, ros::NodeHandle &private_nh, co
 
 void iqr::DockServer::Initialize() {
   ROS_INFO("waitting for move_base action server...");
-  move_base_client_.waitForServer();
+  // move_base_client_.waitForServer();
   ROS_INFO("move_base action server connected.");
   start();
 }
@@ -191,6 +192,7 @@ void iqr::DockServer::GoalCallback(GoalHandle gh) {
   switch (goal.dock) {
     case true:
       if (docked_ == true) {
+        ROS_WARN("rejected, robot has already docked");
         goal_.setRejected(caster_app::DockResult(), "already docked");
       } else {
         ROS_INFO("Docking");
@@ -200,7 +202,34 @@ void iqr::DockServer::GoalCallback(GoalHandle gh) {
       break;
     case false:
       if(docked_ == false) {
-        goal_.setRejected(caster_app::DockResult(), "not on dock");
+        /* test */
+        // Start perception
+        // geometry_msgs::PoseStamped dock_pose;
+        // dock_pose.header.frame_id = "base_footprint";
+        // dock_pose.pose.position.x = 1.0;
+        // dock_pose.pose.orientation.z = 1.0;
+
+        // perception_.start(dock_pose);
+
+        // For timeout calculation
+        // initDockTimeout();
+
+        // Get initial dock pose.
+        // geometry_msgs::PoseStamped dock_pose_base_link;
+        // while (!perception_.getPose(dock_pose_base_link, "base_footprint"))
+        // {
+        //   // Wait for perception to get its first pose estimate.
+        //   // if (!continueDocking(result))
+        //   // {
+        //   //   ROS_DEBUG_NAMED("autodock_dock_callback",
+        //   //                 "Docking failed: Initial dock not found.");
+        //   //   break;
+        //   // }
+        //   ros::spinOnce();
+        // }
+        /* test */
+        ROS_WARN("rejected, robot is not on charging");
+        goal_.setRejected(caster_app::DockResult(), "robot is not on charging");
       } else {
         ROS_INFO("Start undock");
         goal_.setAccepted("Start undock");

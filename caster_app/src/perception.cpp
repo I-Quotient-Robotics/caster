@@ -69,8 +69,8 @@ DockPerception::DockPerception(ros::NodeHandle& nh) :
   }
 
   // Create ideal cloud
-  // Front face is 300mm long
-  for (double y = -0.15; y <= 0.15; y += 0.001)
+  // Front face is 402mm long
+  for (double y = -0.205; y <= 0.205; y += 0.002)
   {
     geometry_msgs::Point p;
     p.x = p.z = 0.0;
@@ -78,15 +78,15 @@ DockPerception::DockPerception(ros::NodeHandle& nh) :
     ideal_cloud_.push_back(p);
     front_cloud_.push_back(p);
   }
-  // Each side is 100mm long, at 45 degree angle
-  for (double x = 0.0; x < 0.05 /*0.0707106*/; x += 0.001)
+  // Each side is 175mm long, at 120 degree angle
+  for (double y = 0.0; y < 0.08759 /*0.08759*/; y += 0.002)
   {
     geometry_msgs::Point p;
-    p.x = x;
-    p.y = 0.15 + x;
+    p.x = tan(1.0471976)*y;
+    p.y = 0.205 + y;
     p.z = 0.0;
     ideal_cloud_.push_back(p);
-    p.y = -0.15 - x;
+    p.y = -0.205 - y;
     ideal_cloud_.insert(ideal_cloud_.begin(), p);
   }
 
@@ -232,8 +232,10 @@ void DockPerception::callback(const sensor_msgs::LaserScanConstPtr& scan)
   // Cluster the laser scan
   laser_processor::ScanMask mask;
   laser_processor::ScanProcessor processor(*scan, mask);
-  processor.splitConnected(0.04);  // TODO(enhancement) parameterize
+  processor.splitConnected(0.01);  // TODO(enhancement) parameterize
   processor.removeLessThan(5);
+
+  ROS_DEBUG_STREAM_NAMED("dock_perception", "Found " << processor.getClusters().size() << " clusters");
 
   // Sort clusters based on distance to last dock
   std::priority_queue<DockCandidatePtr, std::vector<DockCandidatePtr>, CompareCandidates> candidates;
@@ -242,7 +244,7 @@ void DockPerception::callback(const sensor_msgs::LaserScanConstPtr& scan)
        i++)
   {
     DockCandidatePtr c = extract(*i);
-    if (c && c->valid(found_dock_))
+    if (c )// && c->valid(found_dock_))
     {
       candidates.push(c);
     }
@@ -289,6 +291,7 @@ void DockPerception::callback(const sensor_msgs::LaserScanConstPtr& scan)
           ++cloud_iter;
         }
         debug_points_.publish(cloud);
+        ROS_INFO("publish points");
       }
     }
     candidates.pop();
@@ -327,6 +330,7 @@ void DockPerception::callback(const sensor_msgs::LaserScanConstPtr& scan)
       ++cloud_iter;
     }
     debug_points_.publish(cloud);
+    ROS_INFO("publish points");
   }
 
   // Everything after this modifies the dock_
@@ -357,7 +361,7 @@ void DockPerception::callback(const sensor_msgs::LaserScanConstPtr& scan)
   }
 
   // Filter the pose esitmate.
-  dock_.pose = dock_pose_filter_->filter(best_pose);
+  // dock_.pose = dock_pose_filter_->filter(best_pose);
   dock_stamp_ = scan->header.stamp;
   found_dock_ = true;
 }

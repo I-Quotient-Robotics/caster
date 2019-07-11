@@ -13,6 +13,8 @@
 
 #include <caster_app/DockAction.h>
 
+#include <perception.h>
+
 namespace iqr {
 class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
   private:
@@ -34,6 +36,7 @@ class DockServer : public actionlib::ActionServer<caster_app::DockAction> {
 
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> move_base_client_;
 
+    DockPerception perception_;
 
     /* parameter */
     float dock_speed_;
