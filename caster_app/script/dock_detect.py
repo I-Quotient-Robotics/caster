@@ -4,11 +4,59 @@ import random
 import math
 import struct
 
+import numpy as np
+
 import rospy
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import PointCloud
 from sensor_msgs.msg import ChannelFloat32
 from geometry_msgs.msg import Point32
+
+import icp
+
+def GenerateIdealDock(points_count):
+    global viz_pointcloud
+
+    base_length = 0.40239               # 402.39mm
+    hypotenuse_length = 0.17518         # 175.18mm
+    base_angle = math.pi / 3.0 * 2.0    # 120 degrees
+
+    base_points_count = points_count/4*2 + points_count%4
+    hypotenuse_points_count = points_count / 4
+
+    base_step_delta = base_length / base_points_count
+    hypotenuse_delta_x = math.sin(base_angle) * hypotenuse_length / hypotenuse_points_count
+    hypotenuse_delta_y = math.cos(base_angle) * hypotenuse_length / hypotenuse_points_count
+
+    ideal_dock_cloud = []
+
+    # right hypotenuse points
+    for i in range(hypotenuse_points_count):
+        point = Point32()
+        point.x = hypotenuse_delta_x * (hypotenuse_points_count-i)
+        point.y = -(base_length/2.0) + hypotenuse_delta_y*(hypotenuse_points_count-i)
+        point.z = 0.0 # i * 0.01
+        ideal_dock_cloud.append(point)
+
+    # base points
+    for i in range(base_points_count):
+        point = Point32(0.0, base_length/2.0-i*base_step_delta, 0.0)
+        ideal_dock_cloud.append(point)
+
+    # left hypotenuse points
+    for i in range(hypotenuse_points_count):
+        point = Point32()
+        point.x = hypotenuse_delta_x * (hypotenuse_points_count-i)
+        point.y = (base_length/2.0) - hypotenuse_delta_y*(hypotenuse_points_count-i)
+        point.z = 0.0 # i * 0.01
+        ideal_dock_cloud.append(point)
+
+    # viz ideal dock
+    viz_pointcloud = PointCloud()
+    viz_pointcloud.header.frame_id = "base_footprint"
+    viz_pointcloud.header.stamp = rospy.Time.now()
+
+    viz_pointcloud.points = ideal_dock_cloud
 
 def callback(data):
     global cluster_scan_pub, cluster_pointcloud_pub, cluster_pointcloud
@@ -19,64 +67,52 @@ def callback(data):
     # rospy.loginfo("scan type, min angle: %f, max_angle: %f, increment: %f" % (angle_min, angle_max, angle_increment))
     # rospy.loginfo("get scan data: %d points" % (len(data.ranges)))
 
-    cluster_scan = LaserScan()
-    cluster_scan.header = data.header
-    cluster_scan.header.stamp = rospy.Time.now()
-
-    cluster_scan.angle_min = data.angle_min
-    cluster_scan.angle_max = data.angle_max
-    cluster_scan.angle_increment = data.angle_increment
-
-    cluster_scan.time_increment = data.time_increment
-    cluster_scan.scan_time = data.scan_time
-
-    cluster_scan.range_min = data.range_min
-    cluster_scan.range_max = data.range_max
-
-    cluster_pointcloud = PointCloud()
-    cluster_pointcloud.header = cluster_scan.header
-
     last_range = 0;
     cluster_index = 0
 
-    color_r = ChannelFloat32('rgb', [])
-    color_map = [0x00ff00, 0xffff00, 0xff00ff, 0x00ffff]
-
     point_count = 0
+    clouds = []
+    potential_clouds = []
 
     for i in xrange(len(data.ranges)):
-        if(abs(data.ranges[i] - last_range) > 0.025):
-            cluster_index += 1
-            # color = ChannelFloat32('rgb', [random.random(), random.random(), random.random()])
-            # color = ChannelFloat32('rgb', [0, 0, 255])
-            # if(cluster_index == 3):
-            #     break
-        
-        cluster_scan.ranges.append(data.ranges[i])
-        cluster_scan.intensities.append(1000 * cluster_index)
+        if(abs(data.ranges[i] - last_range) > 0.03):
+            # filter cloud with points count
+            if(len(clouds)>80):
+                potential_clouds.append(clouds)
+            clouds = []
+            # cluster_index += 1
 
         point = Point32()
         point.x = math.cos(angle_min + i * angle_increment) * data.ranges[i];
         point.y = math.sin(angle_min + i * angle_increment) * data.ranges[i];
         point.z = 0
-        cluster_pointcloud.points.append(point)
-        color_r.values.append(color_map[cluster_index%4])
-        # color_g.values.append(255)
-        # color_b.values.append(255)
-        # color_f.values.append(255)
+        clouds.append(point)
+        # cluster_pointcloud.points.append(point)
+        # color_r.values.append(color_map[cluster_index%4])
 
         last_range = data.ranges[i]
 
-    cluster_scan_pub.publish(cluster_scan)
+    # add last cloud into potential_clouds
+    # filter cloud with points count
+    if(len(clouds)>80):
+        potential_clouds.append(clouds)
 
-    cluster_pointcloud.channels.append(color_r)
-    # cluster_pointcloud.channels.append(color_g)
-    # cluster_pointcloud.channels.append(color_b)
-    # cluster_pointcloud.channels.append(color_f)
-    # cluster_pointcloud_pub.publish(cluster_pointcloud)
+    cluster_pointcloud = PointCloud()
+    cluster_pointcloud.header = data.header
+    cluster_pointcloud.header.stamp = rospy.Time.now()
     
+    color_r = ChannelFloat32('rgb', [])
+    color_map = [0x00ff00, 0xffff00, 0xff00ff, 0x00ffff]
+
+    for i in xrange(len(potential_clouds)):
+        for j in xrange(len(potential_clouds[i])):
+            cluster_pointcloud.points.append(potential_clouds[i][j])
+            color_r.values.append(color_map[i%4])
+    
+    cluster_pointcloud.channels.append(color_r)
+
 def main():
-    global cluster_scan_pub, cluster_pointcloud_pub, cluster_pointcloud
+    global cluster_scan_pub, cluster_pointcloud_pub, cluster_pointcloud, viz_pointcloud
 
     rospy.init_node('dock_detect', anonymous=True)
 
@@ -86,9 +122,11 @@ def main():
 
     cluster_pointcloud = PointCloud()
 
-    rate = rospy.Rate(1) # 10hz
+    rate = rospy.Rate(2) # default 1hz
+    GenerateIdealDock(130)
     while not rospy.is_shutdown():
-        cluster_pointcloud_pub.publish(cluster_pointcloud)
+        # cluster_pointcloud_pub.publish(cluster_pointcloud)
+        cluster_pointcloud_pub.publish(viz_pointcloud)
         rate.sleep()
 
 if __name__ == '__main__':
