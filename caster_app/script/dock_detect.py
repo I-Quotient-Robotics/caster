@@ -125,8 +125,8 @@ def main():
     rate = rospy.Rate(2) # default 1hz
     GenerateIdealDock(130)
     while not rospy.is_shutdown():
-        # cluster_pointcloud_pub.publish(cluster_pointcloud)
-        cluster_pointcloud_pub.publish(viz_pointcloud)
+        cluster_pointcloud_pub.publish(cluster_pointcloud)
+        # cluster_pointcloud_pub.publish(viz_pointcloud)
         rate.sleep()
 
 if __name__ == '__main__':
