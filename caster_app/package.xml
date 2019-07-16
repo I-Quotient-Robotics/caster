@@ -17,6 +17,12 @@
   <depend>actionlib</depend>
   <depend>actionlib_msgs</depend>
 
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>python-numpy</depend>
+  <depend>python-sklearn</depend>
+
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
