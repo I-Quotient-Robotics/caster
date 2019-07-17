@@ -26,6 +26,7 @@
   <!-- Example: -->
   <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
 
+  <depend>catkin</depend>
   <depend>roscpp</depend>
   <depend>ros-controllers</depend>
   <depend>controller_manager</depend>

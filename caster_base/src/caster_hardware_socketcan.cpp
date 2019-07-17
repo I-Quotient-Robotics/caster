@@ -28,6 +28,12 @@ void iqr::CasterHardware::ControllerTimerCallback(const ros::TimerEvent&) {
   WriteCommandsToHardware();
 }
 
+bool iqr::CasterHardware::SetDigitalOutputCB(caster_base::SetDigitalOutput::Request &req, caster_base::SetDigitalOutput::Response &res) {
+  ROS_INFO("set digital output %d to %d", req.io, req.active);
+  res.result = true;
+  return true;
+}
+
 void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh, ros::NodeHandle& private_nh) {
   node_name_ = node_name;
   nh_ = nh;
@@ -41,6 +47,8 @@ void iqr::CasterHardware::Initialize(std::string node_name, ros::NodeHandle& nh,
 
   can_pub_ = nh_.advertise<can_msgs::Frame>(send_topic_, 1000);
   can_sub_ = nh_.subscribe<can_msgs::Frame>(receive_topic_, 10, &iqr::CasterHardware::CanReceiveCallback, this);
+
+  set_io_service_ = private_nh_.advertiseService("set_digital_output", &iqr::CasterHardware::SetDigitalOutputCB, this);
 
   controller_manager_ = new controller_manager::ControllerManager(this, nh);
   timer_ = nh.createTimer(ros::Duration(0.025), &iqr::CasterHardware::ControllerTimerCallback, this);

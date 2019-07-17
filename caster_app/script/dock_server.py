@@ -15,6 +15,8 @@ from move_base_msgs.msg import MoveBaseGoal
 from move_base_msgs.msg import MoveBaseFeedback
 from move_base_msgs.msg import MoveBaseAction
 
+from caster_base.srv import SetDigitalOutput 
+
 class DockActionServer(ActionServer):
     __docked = False
     __dock_ready_pose = Pose()
@@ -81,6 +83,15 @@ class DockActionServer(ActionServer):
                 self.__undock()
         else:
             rospy.logwarn("unknown dock data type, should be true or false")
+
+    def __set_charge_relay(state):
+        rospy.loginfo("set relay %d" % state)
+        rospy.wait_for_service('set_digital_output')
+        try:
+            set_digital_output = rospy.ServiceProxy('set_digital_output', SetDigitalOutput)
+            resp = set_digital_output(4, state)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s" % e
 
     def __cancel_callback(self, gh):
         self.__movebase_client.cancel_goal()
@@ -151,8 +162,12 @@ class DockActionServer(ActionServer):
         self.__saved_gh.publish_feedback(ca_feedback)
         rospy.loginfo("stop robot")
 
+        # stop robot
         cmd.linear.x = 0
         self.__cmd_pub.publish(cmd)
+
+        # set charge relay on
+        __set_charge_relay(True)
 
         self.__docked = True
         self.__saved_gh.set_succeeded(None, "Docked")
@@ -200,8 +215,12 @@ class DockActionServer(ActionServer):
         self.__saved_gh.publish_feedback(ca_feedback)
         rospy.loginfo("stop robot")
 
+        # stop robot
         cmd.linear.x = 0.0
         self.__cmd_pub.publish(cmd)
+
+        # set charge relay off
+        __set_charge_relay(False)
 
         self.__docked = False
         self.__saved_gh.set_succeeded(None, "Undocked")

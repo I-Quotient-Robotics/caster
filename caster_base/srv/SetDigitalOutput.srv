@@ -1,0 +1,4 @@
+uint8 io
+bool active
+---
+bool result

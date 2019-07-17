@@ -19,6 +19,8 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 
+#include <caster_base/SetDigitalOutput.h>
+
 #define REDUCTION_RATIO                 15.0
 
 #define CANBUS_BASE_FRAME_FORMAT        0b00000000
@@ -58,6 +60,8 @@ class CasterHardware : public hardware_interface::RobotHW {
       /* runtime commands */
       kSetVelocity = 0x2002,
       kSetBLCounter = 0x2004,
+      kSetIndividualDO = 0x2009,
+      kResetIndividualDO = 0x200A,
 
       /* runtime queries */
       kReadMotorAmps = 0x2100,
@@ -100,6 +104,8 @@ class CasterHardware : public hardware_interface::RobotHW {
     void StatusCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
     void ControllerCheck(diagnostic_updater::DiagnosticStatusWrapper& status);
 
+    bool SetDigitalOutputCB(caster_base::SetDigitalOutput::Request &req, caster_base::SetDigitalOutput::Response &res);
+
     std::string node_name_;
 
     ros::NodeHandle nh_;
@@ -121,6 +127,9 @@ class CasterHardware : public hardware_interface::RobotHW {
 
     // diagnostic  update
     diagnostic_updater::Updater diagnostic_updater_;
+
+    // digital output service
+    ros::ServiceServer set_io_service_;
 
     int can_id_;
 
