@@ -71,6 +71,8 @@ class DockActionServer(ActionServer):
                 self.__moveto_dock_ready()
         elif self.__saved_goal.dock == False:
             if self.__docked == False:
+                rospy.logwarn("cancel_all_goals")
+                self.__movebase_client.cancel_all_goals()
                 rospy.logwarn("rejected, robot is not on charging")
                 gh.set_rejected(None, "robot is not on charging")
             else: 
@@ -85,13 +87,16 @@ class DockActionServer(ActionServer):
         rospy.logwarn("cancel callback")
 
     def __movebase_done_callback(self, status, result):
-        # caster_app::DockFeedback feedback
-        feedback = DockFeedback()
-        feedback.dock_feedback = "DockReady arrived"
-        self.__saved_gh.publish_feedback(feedback)
-        rospy.loginfo("move_base action done")
+        if status == 3:
+            # moveto dockready success
+            feedback = DockFeedback()
+            feedback.dock_feedback = "DockReady arrived"
+            self.__saved_gh.publish_feedback(feedback)
+            rospy.loginfo("move_base action done")
 
-        self.__moveto_dock()
+            self.__moveto_dock()
+        else:
+            rospy.loginfo("move_base action was aborted")
 
     def __movebase_feedback_callback(self, feedback):
         try:
@@ -150,7 +155,7 @@ class DockActionServer(ActionServer):
         self.__cmd_pub.publish(cmd)
 
         self.__docked = True
-        self.__saved_gh.set_succeed(None, "Docked")
+        self.__saved_gh.set_succeeded(None, "Docked")
         rospy.loginfo("Docked")
 
     def __moveto_dock_ready(self):
@@ -199,7 +204,7 @@ class DockActionServer(ActionServer):
         self.__cmd_pub.publish(cmd)
 
         self.__docked = False
-        self.__saved_gh.set_succeed(None, "Undocked")
+        self.__saved_gh.set_succeeded(None, "Undocked")
         rospy.loginfo("UnDocked")
 
 def cmd_callback(data):
