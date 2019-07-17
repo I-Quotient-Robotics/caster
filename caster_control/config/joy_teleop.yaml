@@ -3,7 +3,7 @@ teleop:
     type: topic
     message_type: geometry_msgs/Twist
     topic_name: cmd_vel
-    deadman_buttons: [0]
+    deadman_buttons: [0] # Y
     axis_mappings:
       -
         axis: 1
@@ -13,3 +13,16 @@ teleop:
         axis: 0
         target: angular.z
         scale: 0.5
+  dock:
+    type: action
+    action_name: /dock_action
+    action_goal:
+      dock: true
+    buttons: [8] # BACK
+
+  undock:
+    type: action
+    action_name: /dock_action
+    action_goal:
+      dock: false
+    buttons: [9] # START

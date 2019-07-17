@@ -22,20 +22,25 @@ class DockActionServer(ActionServer):
     def __init__(self, name):
         ActionServer.__init__(self, name, DockAction, self.__goal_callback, self.__cancel_callback, False)
         
-        self.__dock_speed = rospy.get_param("~dock_speed", 0.05)
-        self.__dock_distance = rospy.get_param("~dock_distance", 1.0)
+        self.__dock_speed = rospy.get_param("~dock/dock_speed", 0.05)
+        self.__dock_distance = rospy.get_param("~dock/dock_distance", 1.0)
         self.__map_frame = rospy.get_param("~map_frame", "map")
         self.__odom_frame = rospy.get_param("~odom_frame", "map")
         self.__base_frame = rospy.get_param("~base_frame", "base_footprint")
 
         self.__dock_ready_pose = Pose()
-        self.__dock_ready_pose.position.x = 20.8905636619
-        self.__dock_ready_pose.position.y = 14.6787757997
-        self.__dock_ready_pose.position.z = 0.0
-        self.__dock_ready_pose.orientation.x = 0.0
-        self.__dock_ready_pose.orientation.y = 0.0
-        self.__dock_ready_pose.orientation.z = -0.0289632634423
-        self.__dock_ready_pose.orientation.w = 0.999580476685
+        self.__dock_ready_pose.position.x = rospy.get_param("~dock/pose_x")
+        self.__dock_ready_pose.position.y = rospy.get_param("~dock/pose_y")
+        self.__dock_ready_pose.position.z = rospy.get_param("~dock/pose_z")
+        self.__dock_ready_pose.orientation.x = rospy.get_param("~dock/orientation_x")
+        self.__dock_ready_pose.orientation.y = rospy.get_param("~dock/orientation_y")
+        self.__dock_ready_pose.orientation.z = rospy.get_param("~dock/orientation_z")
+        self.__dock_ready_pose.orientation.w = rospy.get_param("~dock/orientation_w")
+
+        rospy.loginfo("param: dock_spped, %s, dock_distance %s" % (self.__dock_speed, self.__dock_distance))
+        rospy.loginfo("param: map_frame %s, odom_frame %s, base_frame %s" % (self.__map_frame, self.__odom_frame, self.__base_frame))
+        rospy.loginfo("dock_pose:")
+        rospy.loginfo(self.__dock_ready_pose)
 
         self.__movebase_client = SimpleActionClient('move_base', MoveBaseAction)
         rospy.loginfo("wait for movebase server...")
@@ -71,7 +76,7 @@ class DockActionServer(ActionServer):
             else: 
                 rospy.loginfo("Start undock")
                 gh.set_accepted("Start undock")
-                # UnDock()
+                self.__undock()
         else:
             rospy.logwarn("unknown dock data type, should be true or false")
 
@@ -80,7 +85,7 @@ class DockActionServer(ActionServer):
         rospy.logwarn("cancel callback")
 
     def __movebase_done_callback(self, status, result):
-        # caster_app::DockFeedback feedback;
+        # caster_app::DockFeedback feedback
         feedback = DockFeedback()
         feedback.dock_feedback = "DockReady arrived"
         self.__saved_gh.publish_feedback(feedback)
@@ -108,8 +113,8 @@ class DockActionServer(ActionServer):
         # last_pose = tf.StampedTransform()
         # current_pose = tf.StampedTransform()
 
-        cmd = Twist();
-        cmd.linear.x = self.__dock_speed;
+        cmd = Twist()
+        cmd.linear.x = self.__dock_speed
 
         ca_feedback = DockFeedback()
 
@@ -121,7 +126,7 @@ class DockActionServer(ActionServer):
 
         delta_distance = 0
         while delta_distance < self.__dock_distance:
-            self.__cmd_pub.publish(cmd);
+            self.__cmd_pub.publish(cmd)
 
             try :
                 current_pose, current_quaternion = self.__tf_listener.lookupTransform(self.__odom_frame, self.__base_frame, rospy.Time(0))
@@ -141,12 +146,12 @@ class DockActionServer(ActionServer):
         self.__saved_gh.publish_feedback(ca_feedback)
         rospy.loginfo("stop robot")
 
-        cmd.linear.x = 0;
-        self.__cmd_pub.publish(cmd);
+        cmd.linear.x = 0
+        self.__cmd_pub.publish(cmd)
 
-        self.__docked = True;
-        self.__saved_gh.set_succeed(None, "Docked");
-        rospy.loginfo("Docked");
+        self.__docked = True
+        self.__saved_gh.set_succeed(None, "Docked")
+        rospy.loginfo("Docked")
 
     def __moveto_dock_ready(self):
         mb_goal = MoveBaseGoal()
@@ -157,7 +162,45 @@ class DockActionServer(ActionServer):
         self.__movebase_client.send_goal(mb_goal, done_cb=self.__movebase_done_callback, feedback_cb=self.__movebase_feedback_callback)
 
     def __undock(self):
-        pass
+        cmd = Twist()
+        cmd.linear.x = -self.__dock_speed
+
+        ca_feedback = DockFeedback()
+
+        try :
+            last_pose, last_quaternion = self.__tf_listener.lookupTransform(self.__odom_frame, self.__base_frame, rospy.Time(0))
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+            rospy.logwarn(e)
+            rospy.logwarn("tf error")
+
+        delta_distance = 0
+        while delta_distance < self.__dock_distance:
+            self.__cmd_pub.publish(cmd)
+
+            try :
+                current_pose, current_quaternion = self.__tf_listener.lookupTransform(self.__odom_frame, self.__base_frame, rospy.Time(0))
+                delta_distance = math.sqrt(math.pow(current_pose[0]-last_pose[0],2)+math.pow(current_pose[1]-last_pose[1],2)+math.pow(current_pose[2]-last_pose[2],2))
+
+                ca_feedback.dock_feedback = "Undock, %fm left" % (self.__dock_distance-delta_distance)
+                self.__saved_gh.publish_feedback(ca_feedback)
+
+                rospy.loginfo("Undock, %fm left" % (self.__dock_distance-delta_distance))
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+                rospy.logwarn(e)
+                rospy.logwarn("tf error aa")
+
+            rospy.Rate(20).sleep()
+
+        ca_feedback.dock_feedback = "Stop on DockReady"
+        self.__saved_gh.publish_feedback(ca_feedback)
+        rospy.loginfo("stop robot")
+
+        cmd.linear.x = 0.0
+        self.__cmd_pub.publish(cmd)
+
+        self.__docked = False
+        self.__saved_gh.set_succeed(None, "Undocked")
+        rospy.loginfo("UnDocked")
 
 def cmd_callback(data):
     pass

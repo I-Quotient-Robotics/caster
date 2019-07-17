@@ -20,7 +20,7 @@ DWAPlannerROS:
 
 # Goal Tolerance Parametes 
   yaw_goal_tolerance: 0.05      #(double, default: 0.05)
-  xy_goal_tolerance: 0.10       #(double, default: 0.10)
+  xy_goal_tolerance: 0.03       #(double, default: 0.10)
   latch_xy_goal_tolerance: false #如果锁定目标公差且机器人到达目标xy位置，机器人将简单地旋转到位，即使它在目标公差的范围内结束。
                                  #(bool, default: false)
 # Forward Simulation Parameters

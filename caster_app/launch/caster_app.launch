@@ -3,7 +3,7 @@
   <arg name="log_type" default="screen"/>
 
   <!-- Caster app -->
-  <node pkg="caster_app" type="caster_app_node" name="caster_app_node" output="$(arg log_type)">
+  <node pkg="caster_app" type="dock_server.py" name="dock_server_node" output="$(arg log_type)">
     <rosparam file="$(find caster_app)/config/caster_app.yaml" command="load" />
     <remap from="caster_app_node/base_scan" to="scan" />
   </node>
