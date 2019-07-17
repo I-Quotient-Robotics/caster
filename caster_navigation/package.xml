@@ -50,7 +50,15 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>navigation</depend>
+  <depend>amcl</depend>
+  <depend>gmapping</depend>
+  <depend>move_base</depend>
+  <depend>dwa_local_planner</depend>
+  <depend>base_local_planner</depend>
+  <depend>navfn</depend>
+  <depend>map_server</depend>
+
+  <depend>caster_base</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

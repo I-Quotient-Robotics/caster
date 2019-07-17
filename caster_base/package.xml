@@ -34,6 +34,14 @@
   <depend>sensor_msgs</depend>
   <depend>diff_drive_controller</depend>
   <depend>yocs_cmd_vel_mux</depend>
+  <depend>socket_bridge</depend>
+
+  <depend>dauxi_ks106</depend>
+  <depend>hongfu_bms</depend>
+  <depend>jy901_driver</depend>
+
+  <depend>caster_control</depend>
+  <depend>caster_description</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
