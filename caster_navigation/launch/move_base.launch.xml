@@ -3,7 +3,7 @@
   <arg name="log_type" default="screen"/>
   
   <!-- Arguments -->
-  <arg name="cmd_vel_topic" default="/cmd_vel" />
+  <arg name="cmd_vel_topic" default="yocs_cmd_vel_mux/input/navigation_cmd" />
   <arg name="odom_topic" default="odom" />
 
   <!-- move_base -->

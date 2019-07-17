@@ -32,6 +32,7 @@
   <depend>hardware_interface</depend>
   <depend>sensor_msgs</depend>
   <depend>diff_drive_controller</depend>
+  <depend>yocs_cmd_vel_mux</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
