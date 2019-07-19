@@ -1,15 +1,29 @@
 debug: true
 map_frame: map
-odom_frame: map
+odom_frame: odom
 base_frame: base_footprint
 
+# stdr hospital
+# dock:
+#   dock_speed: 0.05
+#   dock_distance: 1.0
+#   pose_x: 20.8905636619
+#   pose_y: 14.6787757997
+#   pose_z: 0.0
+#   orientation_x: 0.0
+#   orientation_y: 0.0
+#   orientation_z: -0.0289632634423 
+#   orientation_w: 0.999580476685
+
+# b202
 dock:
-  dock_speed: 0.05
-  dock_distance: 1.0
-  pose_x: 20.8905636619
-  pose_y: 14.6787757997
+  dock_speed: 0.1
+  dock_distance: 0.5
+  pose_x: 1.73393594921
+  pose_y: -1.05576271553
   pose_z: 0.0
   orientation_x: 0.0
   orientation_y: 0.0
-  orientation_z: -0.0289632634423 
-  orientation_w: 0.999580476685
+  orientation_z: -0.405000975815
+  orientation_w: 0.914316252502
+

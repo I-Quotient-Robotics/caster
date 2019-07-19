@@ -10,7 +10,7 @@ iqr::DockServer::DockServer(ros::NodeHandle &nh, ros::NodeHandle &private_nh, co
           boost::bind(&DockServer::GoalCallback, this, _1),
           boost::bind(&DockServer::CancelCallback, this, _1),
           false) {
-  cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("robot0/cmd_vel", 1000);
+  cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
 
   private_nh_.param<float>("dock/dock_speed", dock_speed_, 0.05);
   private_nh_.param<float>("dock/dock_distance", dock_distance_, 1.0);

@@ -30,7 +30,20 @@ void iqr::CasterHardware::ControllerTimerCallback(const ros::TimerEvent&) {
 
 bool iqr::CasterHardware::SetDigitalOutputCB(caster_base::SetDigitalOutput::Request &req, caster_base::SetDigitalOutput::Response &res) {
   ROS_INFO("set digital output %d to %d", req.io, req.active);
-  res.result = true;
+
+  if(req.io>=1 && req.io<=4) {
+    if(req.active == true) {
+      Command(kSetIndividualDO, 0x00, static_cast<uint8_t>(req.io), 1);
+    } else if (req.active == false) {
+      Command(kResetIndividualDO, 0x00, static_cast<uint8_t>(req.io), 1);
+    }
+
+    res.result = true;
+  } else {
+    ROS_WARN("digital pin should be in 1-4, now is %d", req.io);
+    res.result = false;
+  }
+
   return true;
 }
 

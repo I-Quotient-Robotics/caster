@@ -13,7 +13,7 @@ TrajectoryPlannerROS:
   acc_lim_theta: 1.0       #机器人的最大角加速度，单位radians/sec^2 (double, default: 3.2)
 
 # Goal Tolerance Parameters
-  xy_goal_tolerance: 0.02  #到达目标时x&y方向允许的误差 (double, default: 0.10)
+  xy_goal_tolerance: 0.10  #到达目标时x&y方向允许的误差 (double, default: 0.10)
   yaw_goal_tolerance: 0.05 #到达目标时角度允许的误差 (double, default: 0.05)
 
 # Differential-drive robot configuration

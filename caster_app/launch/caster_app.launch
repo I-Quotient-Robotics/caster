@@ -6,5 +6,10 @@
   <node pkg="caster_app" type="dock_server.py" name="dock_server_node" output="$(arg log_type)">
     <rosparam file="$(find caster_app)/config/caster_app.yaml" command="load" />
     <remap from="caster_app_node/base_scan" to="scan" />
+    <remap from="cmd_vel" to="yocs_cmd_vel_mux/input/navigation_cmd" />
+  </node>
+
+  <node pkg="caster_app" type="dock_detect.py" name="dock_detect_node" output="$(arg log_type)">
+    <rosparam file="$(find caster_app)/config/caster_app.yaml" command="load" />
   </node>
 </launch>

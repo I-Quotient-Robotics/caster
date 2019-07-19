@@ -16,10 +16,13 @@ from geometry_msgs.msg import PoseStamped
 
 import icp
 
+min_detect_angle = -0.87266     # now: -50 degree # -math.pi/4.0
+max_detect_angle = 0.87266      # now: 50 degree  # math.pi/4.0
+
 find_dock = False
 cluster_threshold = 0.04
-icp_distance_threshold = 0.007
-potential_clouds_min_points = 150
+icp_distance_threshold = 0.01
+potential_clouds_min_points = 80
 
 T = np.identity(4)
 dock_pose = PoseStamped()
@@ -44,7 +47,7 @@ def GenerateIdealDock(points_count):
     # rospy.loginfo("GenerateIdealDock with %d points" % points_count)
 
     base_length = 0.40239               # 402.39mm
-    hypotenuse_length = 0.17518         # 175.18mm
+    hypotenuse_length = 0.14         # 175.18mm
     base_angle = math.pi / 3.0 * 2.0    # 120 degrees
 
     base_points_count = points_count/4*2 + points_count%4
@@ -103,21 +106,22 @@ def callback(data):
     potential_clouds = []
 
     for i in xrange(len(data.ranges)):
-        point = Point32()
-        point.x = math.cos(angle_min + i * angle_increment) * data.ranges[i];
-        point.y = math.sin(angle_min + i * angle_increment) * data.ranges[i];
-        point.z = 0
+        if (angle_min + i * angle_increment) >= min_detect_angle and (angle_min + i * angle_increment) <= max_detect_angle:
+            point = Point32()
+            point.x = math.cos(angle_min + i * angle_increment) * data.ranges[i];
+            point.y = math.sin(angle_min + i * angle_increment) * data.ranges[i];
+            point.z = 0
 
-        distance = math.sqrt(math.pow(point.x-last_point.x,2)+math.pow(point.y-last_point.y,2))
-        if(distance > cluster_threshold):
-            if(len(clouds)>potential_clouds_min_points):
-                potential_clouds.append(clouds)
-            clouds = []
+            distance = math.sqrt(math.pow(point.x-last_point.x,2)+math.pow(point.y-last_point.y,2))
+            if(distance > cluster_threshold):
+                if(len(clouds)>potential_clouds_min_points):
+                    potential_clouds.append(clouds)
+                clouds = []
 
-        clouds.append(point)
+            clouds.append(point)
 
-        last_point = point
-        last_range = data.ranges[i]
+            last_point = point
+            last_range = data.ranges[i]
 
     # add last cloud into potential_clouds
     # filter cloud with points count
@@ -129,23 +133,34 @@ def callback(data):
         rospy.logwarn("can not find dock")
         return
 
-    ideal_dock_cloud = GenerateIdealDock(len(potential_clouds[0]))
+    best_p_i = -1
+    best_distance = icp_distance_threshold
+    best_T = None
+    for p_i in xrange(len(potential_clouds)):
+        ideal_dock_cloud = GenerateIdealDock(len(potential_clouds[p_i]))
 
-    ideal_dock_np = Point32ToNumpy(ideal_dock_cloud)
-    potential_cloud_np = Point32ToNumpy(potential_clouds[0])
+        ideal_dock_np = Point32ToNumpy(ideal_dock_cloud)
+        potential_cloud_np = Point32ToNumpy(potential_clouds[p_i])
 
-    T, distance, i = icp.icp(ideal_dock_np, potential_cloud_np)
+        T, distance, i = icp.icp(ideal_dock_np, potential_cloud_np)
 
-    qt = tf.transformations.quaternion_from_matrix(T)
+        mean_distance = np.mean(distance)
+        if mean_distance < icp_distance_threshold:
+            if(mean_distance < best_distance):
+                best_p_i = p_i
+                best_distance = mean_distance
+                best_T = T
 
-    if(np.mean(distance) < icp_distance_threshold):
+    if best_p_i >= 0:
+        qt = tf.transformations.quaternion_from_matrix(best_T)
+
         find_dock = True
         dock_pose = PoseStamped()
         dock_pose.header.frame_id = "laser_link"
         dock_pose.header.stamp = rospy.Time.now()
-        dock_pose.pose.position.x = T[0][3]
-        dock_pose.pose.position.y = T[1][3]
-        dock_pose.pose.position.z = T[2][3]
+        dock_pose.pose.position.x = best_T[0][3]
+        dock_pose.pose.position.y = best_T[1][3]
+        dock_pose.pose.position.z = best_T[2][3]
         dock_pose.pose.orientation.x = qt[0]
         dock_pose.pose.orientation.y = qt[1]
         dock_pose.pose.orientation.z = qt[2]
@@ -187,13 +202,18 @@ def main():
 
     # dock_pose = PoseStamped();
 
-    rate = rospy.Rate(10) # default 20Hz
+    rate = rospy.Rate(40) # default 20Hz
     while not rospy.is_shutdown():
 
         if(find_dock):
             dock_tf_broadcaster.sendTransform(tf.transformations.translation_from_matrix(T), tf.transformations.quaternion_from_matrix(T), rospy.Time.now(), "dock", "laser_link")
 
+            # orientation_q = dock_pose.pose.orientation
+            # orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+            # (r, p, y) = tf.transformations.euler_from_quaternion(orientation_list)
             dock_pose.header.stamp = rospy.Time.now()
+            # dock_pose.pose.position.x += math.cos(y) * -0.5;
+            # dock_pose.pose.position.y += math.sin(y) * -0.5;
             dock_pose_pub.publish(dock_pose)
 
             ideal_dock_pointcloud.header.stamp = rospy.Time.now()

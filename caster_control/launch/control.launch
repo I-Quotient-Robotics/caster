@@ -19,10 +19,10 @@
   </node>
   
   <!-- Joy controller -->
-  <node pkg="joy" type="joy_node" name="joy_node" output="$(arg log_type)">
+<!--   <node pkg="joy" type="joy_node" name="joy_node" output="$(arg log_type)">
     <param name="dev" type="string" value="/dev/input/js0" />
     <param name="autorepeat_rate" type="double" value="10" />
-  </node>
+  </node> -->
 
   <rosparam command="load" file="$(find caster_control)/config/joy_teleop.yaml" />
   <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop_node" output="$(arg log_type)" >

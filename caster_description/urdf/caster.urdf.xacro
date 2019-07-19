@@ -122,11 +122,18 @@
 
   <!-- Laser link -->
   <link name="laser_link" />
-
   <joint name="laser_link_joint" type="fixed">
     <origin xyz="0.2301 0 0.147" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="laser_link" />
+  </joint>
+
+  <!-- Laser link 2 (rplidar) -->
+  <link name="laser_link2" />
+  <joint name="laser_link_joint2" type="fixed">
+    <origin xyz="0.01525 0 0.2115" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="laser_link2" />
   </joint>
 
   <!-- Drive wheel link -->
