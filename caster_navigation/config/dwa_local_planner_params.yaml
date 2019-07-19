@@ -1,26 +1,26 @@
 DWAPlannerROS:
 
   acc_lim_x: 2.5                #x方向的加速度极限，单位为 meters/sec^2 (double, default: 2.5)
-  acc_lim_y: 0                  #                                  (double, default: 2.5)
+  acc_lim_y: 2.5                #                                  (double, default: 2.5)
   acc_lim_th: 3.2               #角加速度极限，单位为 radians/sec^2 (double, default: 3.2)
 
 # The velocity when robot is moving in a straight line
   max_trans_vel:  0.55          #机器人最大平移速度的绝对值 (double, default: 0.55)
-  min_trans_vel:  0.1          #                       (double, default: 0.1)
+  min_trans_vel:  0.01          #                       (double, default: 0.1)
 
 # Robot Configuration Parameters
   max_vel_x: 0.55               #机器人在x方向的加速度极限，单位为 meters/sec^2 (double, default: 0.55)
-  min_vel_x: 0.00              #                                        (double, default: 0.0)
+  min_vel_x: -0.1              #                                        (double, default: 0.0)
 
   max_vel_y: 0                 #                                          (double, default: 0.1)
   min_vel_y: 0                 #                                          (double, default: -0.1)
  
   max_rot_vel: 1.0             #最大角速度的绝对值，单位为 rad/s (double, default: 1.0)
-  min_rot_vel: 0.4             #                             (double, default: 0.4)
+  min_rot_vel: 0.03            #                             (double, default: 0.4)
 
 # Goal Tolerance Parametes 
-  yaw_goal_tolerance: 0.05      #(double, default: 0.05)
-  xy_goal_tolerance: 0.10       #(double, default: 0.10)
+  yaw_goal_tolerance: 0.03      #(double, default: 0.05)
+  xy_goal_tolerance: 0.07       #(double, default: 0.10)
   latch_xy_goal_tolerance: true #如果锁定目标公差且机器人到达目标xy位置，机器人将简单地旋转到位，即使它在目标公差的范围内结束。
                                  #(bool, default: false)
 # Forward Simulation Parameters

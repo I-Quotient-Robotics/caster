@@ -6,24 +6,18 @@ import tf
 
 from actionlib import SimpleActionClient
 from actionlib.action_server import ActionServer
+
+from geometry_msgs.msg import Pose, Twist, PoseStamped
+from move_base_msgs.msg import MoveBaseGoal, MoveBaseFeedback, MoveBaseAction
+
+from caster_base.srv import SetDigitalOutput
 from caster_app.msg import DockAction, DockFeedback, DockResult
 
-from geometry_msgs.msg import Pose
-from geometry_msgs.msg import PoseStamped
-from geometry_msgs.msg import Twist
-
-from move_base_msgs.msg import MoveBaseGoal
-from move_base_msgs.msg import MoveBaseFeedback
-from move_base_msgs.msg import MoveBaseAction
-
-from caster_base.srv import SetDigitalOutput 
-
 class DockActionServer(ActionServer):
-    __docked = False
-    __dock_ready_pose = Pose()
-
     def __init__(self, name):
         ActionServer.__init__(self, name, DockAction, self.__goal_callback, self.__cancel_callback, False)
+
+        self.__docked = False
         
         self.__dock_speed = rospy.get_param("~dock/dock_speed", 0.05)
         self.__dock_distance = rospy.get_param("~dock/dock_distance", 1.0)
@@ -65,23 +59,15 @@ class DockActionServer(ActionServer):
         rospy.loginfo("Creating ActionServer [%s]\n", name)
 
     def __dock_pose_callback(self, data):
-        # rospy.loginfo("frame_id: %s", data.header.frame_id)
-        # try:
-        #     self.__tf_listener.lookupTransform("dock", "map", rospy.Time())
-        # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-        #     rospy.logwarn("tf 12error, %s" % e)
-
-        # self.__tf_listener.waitForTransform("/laser_link","/map", rospy.Time(), rospy.Duration(5.0))
-
         ps = PoseStamped()
         # ps.header.stamp = rospy.Time.now()
         ps.header.frame_id = "dock"
-        ps.pose.position.x = -0.8
+        ps.pose.position.x = -self.__dock_distance
 
         try:
-            self.__dock_ready_pose_2 = self.__tf_listener.transformPose("/map", ps)
+            self.__dock_ready_pose_2 = self.__tf_listener.transformPose("map", ps)
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-            self.__dock_ready_pose_2.pose.position.z = -0.3
+            self.__dock_ready_pose_2.pose.position.z = -1.0
             rospy.logwarn("tf 1error, %s" % e)
 
         self.__dock_ready_pose_2.pose.position.z = 0.0
@@ -91,7 +77,6 @@ class DockActionServer(ActionServer):
     def __goal_callback(self, gh):
         self.__saved_gh = gh
         self.__saved_goal = gh.get_goal()
-        # caster_app::DockGoal goal = *goal_.getGoal()
 
         if self.__saved_goal.dock == True:
             if self.__docked == True:
@@ -138,41 +123,41 @@ class DockActionServer(ActionServer):
         self.__movebase_client.cancel_goal()
         rospy.logwarn("cancel callback")
 
-    def __movebase_done_callback(self, status, result):
-        if status == 3:
-            # moveto dockready success
-            feedback = DockFeedback()
+    # def __movebase_done_callback(self, status, result):
+    #     if status == 3:
+    #         # moveto dockready success
+    #         feedback = DockFeedback()
 
-            if self.__dock_step == 0:
-                feedback.dock_feedback = "DockReady arrived"
-                self.__saved_gh.publish_feedback(feedback)
-                rospy.loginfo("DockReady arrived")
+    #         if self.__dock_step == 0:
+    #             feedback.dock_feedback = "DockReady arrived"
+    #             self.__saved_gh.publish_feedback(feedback)
+    #             rospy.loginfo("DockReady arrived")
 
-                self.__dock_step = 1
-                # self.__movebase_client.stop_tracking_goal()
-                # self.__moveto_dock_ready_2()
-            else:
-                feedback.dock_feedback = "DockReady2 arrived"
-                self.__saved_gh.publish_feedback(feedback)
-                rospy.loginfo("DockReady2 arrived")
-                # self.__moveto_dock()
-        else:
-            rospy.loginfo("move_base action was aborted")
+    #             # self.__dock_step = 1
+    #             # self.__movebase_client.stop_tracking_goal()
+    #             # self.__moveto_dock_ready_2()
+    #         else:
+    #             feedback.dock_feedback = "DockReady2 arrived"
+    #             self.__saved_gh.publish_feedback(feedback)
+    #             rospy.loginfo("DockReady2 arrived")
+    #             # self.__moveto_dock()
+    #     else:
+    #         rospy.loginfo("move_base action was aborted")
 
-    def __movebase_feedback_callback(self, feedback):
-        try:
-            (trans,rot) = self.__tf_listener.lookupTransform(self.__map_frame, self.__base_frame, rospy.Time(0))
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            rospy.logwarn("tf error")
+    # def __movebase_feedback_callback(self, feedback):
+    #     try:
+    #         (trans,rot) = self.__tf_listener.lookupTransform(self.__map_frame, self.__base_frame, rospy.Time(0))
+    #     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+    #         rospy.logwarn("tf error")
 
-        distance = math.sqrt(math.pow(self.__dock_ready_pose.position.x-trans[0],2)+math.pow(self.__dock_ready_pose.position.y-trans[1],2)+math.pow(self.__dock_ready_pose.position.z-trans[2],2))
+    #     distance = math.sqrt(math.pow(self.__dock_ready_pose.position.x-trans[0],2)+math.pow(self.__dock_ready_pose.position.y-trans[1],2)+math.pow(self.__dock_ready_pose.position.z-trans[2],2))
 
-        ca_feedback = DockFeedback()
-        ca_feedback.dock_feedback = "Moving to DockReady, %fm left" % (distance)
-        self.__saved_gh.publish_feedback(ca_feedback)
+    #     ca_feedback = DockFeedback()
+    #     ca_feedback.dock_feedback = "Moving to DockReady, %fm left" % (distance)
+    #     self.__saved_gh.publish_feedback(ca_feedback)
 
-        rospy.loginfo("Moving to DockReady, %fm left", distance)
-        rospy.loginfo(trans)
+    #     rospy.loginfo("Moving to DockReady, %fm left", distance)
+    #     rospy.loginfo(trans)
 
     def __moveto_dock(self):
         # robot_pose = tf.StampedTransform()
@@ -191,7 +176,7 @@ class DockActionServer(ActionServer):
             rospy.logwarn("tf error")
 
         delta_distance = 0
-        while delta_distance < self.__dock_distance and not rospy.is_shutdown():
+        while delta_distance < self.__dock_distance-0.30 and not rospy.is_shutdown():
             self.__cmd_pub.publish(cmd)
 
             try :
@@ -223,13 +208,13 @@ class DockActionServer(ActionServer):
         self.__saved_gh.set_succeeded(None, "Docked")
         rospy.loginfo("Docked")
 
-    def __moveto_dock_ready(self):
-        mb_goal = MoveBaseGoal()
-        mb_goal.target_pose.header.stamp = rospy.Time.now()
-        mb_goal.target_pose.header.frame_id = self.__map_frame
-        mb_goal.target_pose.pose = self.__dock_ready_pose
+    # def __moveto_dock_ready(self):
+    #     mb_goal = MoveBaseGoal()
+    #     mb_goal.target_pose.header.stamp = rospy.Time.now()
+    #     mb_goal.target_pose.header.frame_id = self.__map_frame
+    #     mb_goal.target_pose.pose = self.__dock_ready_pose
 
-        self.__movebase_client.send_goal(mb_goal, done_cb=self.__movebase_done_callback, feedback_cb=self.__movebase_feedback_callback)
+    #     self.__movebase_client.send_goal(mb_goal, done_cb=self.__movebase_done_callback, feedback_cb=self.__movebase_feedback_callback)
 
     def __moveto_dock_ready_allin(self):
         # step 1
@@ -268,25 +253,25 @@ class DockActionServer(ActionServer):
 
         rospy.loginfo("dock www")
 
-    def __moveto_dock_ready_2(self):
-        rospy.loginfo("moveto dock ready2")
-        rospy.loginfo(self.__dock_ready_pose_2)
-        mb_goal = MoveBaseGoal()
-        mb_goal.target_pose.header.stamp = rospy.Time.now()
-        mb_goal.target_pose.header.frame_id = self.__map_frame
+    # def __moveto_dock_ready_2(self):
+    #     rospy.loginfo("moveto dock ready2")
+    #     rospy.loginfo(self.__dock_ready_pose_2)
+    #     mb_goal = MoveBaseGoal()
+    #     mb_goal.target_pose.header.stamp = rospy.Time.now()
+    #     mb_goal.target_pose.header.frame_id = self.__map_frame
 
-        if self.__dock_ready_pose_2.pose.position.z == -0.3:
-            rospy.logwarn("ready 2 failed")
-            return
-        else:
-            t = self.__dock_ready_pose_2.pose
+    #     if self.__dock_ready_pose_2.pose.position.z == -self.__dock_distance:
+    #         rospy.logwarn("ready 2 failed")
+    #         return
+    #     else:
+    #         t = self.__dock_ready_pose_2.pose
 
-        t.position.z == 0.0
-        mb_goal.target_pose.pose = t
+    #     t.position.z == 0.0
+    #     mb_goal.target_pose.pose = t
 
-        self.__movebase_client.send_goal(mb_goal, done_cb=self.__movebase_done_callback, feedback_cb=self.__movebase_feedback_callback)
-        rospy.loginfo("what")
-        rospy.loginfo(mb_goal)
+    #     self.__movebase_client.send_goal(mb_goal, done_cb=self.__movebase_done_callback, feedback_cb=self.__movebase_feedback_callback)
+    #     rospy.loginfo("what")
+    #     rospy.loginfo(mb_goal)
 
     def __undock(self):
         cmd = Twist()
@@ -333,16 +318,10 @@ class DockActionServer(ActionServer):
         self.__saved_gh.set_succeeded(None, "Undocked")
         rospy.loginfo("UnDocked")
 
-def cmd_callback(data):
-    pass
-
 def main():
     rospy.init_node("dock_server")
     ref_server = DockActionServer("dock_action")
     ref_server.start()
-
-    # cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("robot0/cmd_vel", 1000)
-    rospy.Subscriber("chatter", Twist, cmd_callback)
 
     rospy.spin()
 
