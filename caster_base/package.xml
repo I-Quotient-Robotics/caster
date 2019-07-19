@@ -36,6 +36,7 @@
   <depend>yocs_cmd_vel_mux</depend>
   <depend>socket_bridge</depend>
 
+  <depend>rplidar_ros</depend>
   <depend>dauxi_ks106</depend>
   <depend>hongfu_bms</depend>
   <depend>jy901_driver</depend>

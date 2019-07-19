@@ -6,9 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /DockDetect1/Cluster1
-        - /DockDetect1/Dock Pose1
-        - /DockDetect1/Ideal Dock1
+        - /UltraSonic1
+        - /DockDetect1
       Splitter Ratio: 0.660240948
     Tree Height: 1378
   - Class: rviz/Selection
@@ -229,15 +228,15 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 2808
+      Max Intensity: 2741
       Min Color: 0; 0; 0
-      Min Intensity: 188
+      Min Intensity: 202
       Name: Main Laser
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.00999999978
+      Size (m): 0.0199999996
       Style: Flat Squares
       Topic: /scan
       Unreliable: false
@@ -247,8 +246,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 6.63786983
-        Min Value: -8.07689285
+        Max Value: 3.8454988
+        Min Value: -9.22817802
         Value: true
       Axis: X
       Channel Name: x
@@ -256,7 +255,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 6.62387609
@@ -267,13 +266,13 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.00999999978
+      Size (m): 0.0199999996
       Style: Flat Squares
       Topic: /scan_2
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Class: rviz/Group
       Displays:
         - Alpha: 0.5
@@ -421,7 +420,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 2.57999945
+      Angle: 2.50999975
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
@@ -431,7 +430,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Scale: 85.7446289
+      Scale: 177.592148
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: -0.118560188
