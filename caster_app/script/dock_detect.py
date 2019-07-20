@@ -16,11 +16,11 @@ from geometry_msgs.msg import PoseStamped
 
 import icp
 
-min_detect_angle = -0.87266     # now: -50 degree # -math.pi/4.0
-max_detect_angle = 0.87266      # now: 50 degree  # math.pi/4.0
+min_detect_angle = -0.87266         # now: -50 degree # -math.pi/4.0
+max_detect_angle = 0.87266          # now: 50 degree  # math.pi/4.0
 
 find_dock = False
-cluster_threshold = 0.04
+cluster_threshold = 0.04            # cluster distance threshold
 icp_distance_threshold = 0.01
 potential_clouds_min_points = 80
 
@@ -130,7 +130,7 @@ def callback(data):
 
     if(len(potential_clouds)<=0):
         find_dock = False
-        rospy.logwarn("can not find dock")
+        # rospy.logwarn("can not find dock")
         return
 
     best_p_i = -1

@@ -30,15 +30,28 @@ robot_radius: 0.27
 #   orientation_w: 0.914316252502
 
 # b202 final
+# dock:
+#   dock_speed: 0.1
+#   dock_distance: 0.6
+#   pose_x: -0.86532236616
+#   pose_y: 0.252356349475
+#   pose_z: 0.0
+#   orientation_x: 0.0
+#   orientation_y: 0.0
+#   orientation_z: -0.0238378874242
+#   orientation_w: 0.999715837187
+
+
+# b202 final_2
 dock:
   dock_speed: 0.1
   dock_distance: 0.6
-  pose_x: -0.86532236616
-  pose_y: 0.252356349475
+  pose_x: 2.03403622872
+  pose_y: 0.155554583598
   pose_z: 0.0
   orientation_x: 0.0
   orientation_y: 0.0
-  orientation_z: -0.0238378874242
-  orientation_w: 0.999715837187
+  orientation_z: 0.427527075925
+  orientation_w: 0.904002543885
 
 

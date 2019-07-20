@@ -3,7 +3,7 @@
   <arg name="log_type" default="screen"/>
   
   <!-- Arguments -->
-  <arg name="map_file" default="$(find caster_navigation)/map/b202_final.yaml"/>
+  <arg name="map_file" default="$(find caster_navigation)/map/b202_final_2.yaml"/>
   <arg name="rviz" default="false"/>
 
   <!-- Map server -->

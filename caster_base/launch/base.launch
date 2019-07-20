@@ -50,7 +50,6 @@
     <remap from="scan" to="scan_2"/>
   </node>
 
-
   <!-- BMS driver -->
   <node pkg="hongfu_bms_status" type="hongfu_bms_status_node" name="hongfu_bms_status_node" output="$(arg log_type)">
     <param name="port" type="string" value="/dev/caster_bms" />
@@ -84,7 +83,7 @@
   </include>
   
   <!-- Robot pose ekf -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="$(arg log_type)">
+<!--   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="$(arg log_type)">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="50.0"/>
@@ -94,7 +93,7 @@
     <param name="vo_used" value="false"/>
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="false"/>
-  </node>
+  </node> -->
 
   <!--Teleop -->
   <!-- <include file="$(find caster_control)/launch/teleop.launch" /> -->
