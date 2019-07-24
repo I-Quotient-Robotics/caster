@@ -1,6 +1,6 @@
 # Caster
 
-<p align="center"><img src="/users/ye/Desktop/logo.png" width="80%" /></p>
+<p align="center"><img src="robot.png" width="80%" /></p>
 
 ## Overview
 
