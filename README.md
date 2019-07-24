@@ -1,6 +1,7 @@
 # Caster
 
-![Caster robot](robot.png)
+<!-- ![Caster robot](robot.png) -->
+<p align="center"><img src="robot.png" width="70%" /><br><br></p>
 
 ## Overview
 
