@@ -1,4 +1,4 @@
-# Caster
+# Caster ROS
 
 <p align="center"><img src="/users/ye/Desktop/logo.png" width="80%" /></p>
 ## Overview
@@ -7,6 +7,7 @@ IQR Caster robot ROS packages, contains [caster_robot](caster_robot) and [caster
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+© 2019 Beijing I-Quotient Robot Technology Co., Ltd. All Rights Reserved
 
 ## caster_robot
 ROS packages for the IQR Caster robot, for operating Caster robot hardware. 
@@ -22,6 +23,3 @@ Desktop ROS packages for the IQR Caster, which may pull in graphical dependencie
  - [caster_viz](caster_viz) : Visualization (rviz) configuration and bringup
  - [caster_teleop](caster_teleop) : Joystick teleop configuration and launch file
  - [caster_description](caster_description) : Robot description (URDF)
-
-------
-© 2019 Beijing I-Quotient Robot Technology Co., Ltd. All Rights Reserved
