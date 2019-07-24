@@ -15,19 +15,21 @@
   <author email="ye@iquotient-robotics.com">Ye Tian</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
   
   <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>socket_bridge</depend>
+  <depend>yocs_cmd_vel_mux</depend>
+  
   <depend>ros-controllers</depend>
   <depend>controller_manager</depend>
   <depend>hardware_interface</depend>
-  <depend>sensor_msgs</depend>
   <depend>diff_drive_controller</depend>
-  <depend>yocs_cmd_vel_mux</depend>
-  <depend>socket_bridge</depend>
 
+  <depend>hongfu_bms</depend>
   <depend>rplidar_ros</depend>
   <depend>dauxi_ks106</depend>
-  <depend>hongfu_bms</depend>
   <depend>jy901_driver</depend>
 
   <depend>caster_control</depend>

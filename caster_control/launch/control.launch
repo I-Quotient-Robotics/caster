@@ -17,15 +17,5 @@
     <param name="yaml_cfg_file" value="$(find caster_control)/config/cmd_vel_mux.yaml"/>
     <remap from="yocs_cmd_vel_mux/output/cmd_vel" to="cmd_vel"/>
   </node>
-  
-  <!-- Joy controller -->
-<!--   <node pkg="joy" type="joy_node" name="joy_node" output="$(arg log_type)">
-    <param name="dev" type="string" value="/dev/input/js0" />
-    <param name="autorepeat_rate" type="double" value="10" />
-  </node> -->
 
-  <rosparam command="load" file="$(find caster_control)/config/joy_teleop.yaml" />
-  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop_node" output="$(arg log_type)" >
-    <remap from="cmd_vel" to="yocs_cmd_vel_mux/input/joy_cmd"/>
-  </node>
-</launch>
+ </launch>

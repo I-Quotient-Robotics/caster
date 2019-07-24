@@ -15,16 +15,19 @@
   <author email="ye@iquotient-robotics.com">Ye Tian</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
 
-  <depend>amcl</depend>
-  <depend>gmapping</depend>
-  <depend>move_base</depend>
-  <depend>dwa_local_planner</depend>
-  <depend>base_local_planner</depend>
-  <depend>navfn</depend>
-  <depend>map_server</depend>
+  <run_depend>amcl</run_depend>
+  <run_depend>navfn</run_depend>
+  <run_depend>gmapping</run_depend>
+  <run_depend>move_base</run_depend>
+  <run_depend>map_server</run_depend>
+  <run_depend>dwa_local_planner</run_depend>
+  <run_depend>base_local_planner</run_depend>
 
   <depend>caster_base</depend>
+  <depend>caster_control</depend>
+  <depend>caster_description</depend>
 
   <export>
   </export>
