@@ -4,13 +4,15 @@
   <version>1.1.0</version>
   <description>The caster_app package</description>
 
-  <maintainer email="ye.tian@iquotient-robotics.com">Ye Tian</maintainer>
+  <maintainer email="ye@iquotient-robotics.com">Ye Tian</maintainer>
 
   <license>MIT</license>
 
-  <!-- <url type="website">http://wiki.ros.org/caster_app</url> -->
+  <url type="website">https://github.com/I-Quotient-Robotics/caster</url>
+  <url type="repository">https://github.com/I-Quotient-Robotics/caster</url>
+  <url type="bugtracker">https://github.com/I-Quotient-Robotics/caster/issues</url>
 
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+  <author email="ye@iquotient-robotics.com">Ye Tian</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -26,9 +28,6 @@
   
   <depend>caster_navigation</depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>

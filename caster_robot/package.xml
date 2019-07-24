@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>caster_viz</name>
+  <name>caster_robot</name>
   <version>1.1.0</version>
-  <description>The caster_viz package</description>
+  <description>The caster_robot package</description>
 
   <maintainer email="ye@iquotient-robotics.com">Ye Tian</maintainer>
 
@@ -15,8 +15,13 @@
   <author email="ye@iquotient-robotics.com">Ye Tian</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>rviz</depend>
+
+  <depend>caster_base</depend>
+  <depend>caster_control</depend>
+  <depend>caster_navigation</depend>
+  <depend>caster_description</depend>
 
   <export>
+    <metapackage/>
   </export>
 </package>
