@@ -1,6 +1,7 @@
 # Caster
 
-<p align="center"><img src="/users/ye/Desktop/logo.png" width="80%" /></p>
+<p align="center"><img src="robot.png" width="80%" /></p>
+
 ## Overview
 
 IQR Caster robot ROS packages, contains [caster_robot](caster_robot) and [caster_desktop](caster_desktop) metapackages.
