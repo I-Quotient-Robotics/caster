@@ -22,7 +22,7 @@ class DockActionServer(ActionServer):
         self.__dock_speed = rospy.get_param("~dock/dock_speed", 0.05)
         self.__dock_distance = rospy.get_param("~dock/dock_distance", 1.0)
         self.__map_frame = rospy.get_param("~map_frame", "map")
-        self.__odom_frame = rospy.get_param("~odom_frame", "map")
+        self.__odom_frame = rospy.get_param("~odom_frame", "odom")
         self.__base_frame = rospy.get_param("~base_frame", "base_footprint")
 
         self.__dock_ready_pose = Pose()
