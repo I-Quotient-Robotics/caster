@@ -27,4 +27,3 @@ Desktop ROS packages for the IQR Caster, which may pull in graphical dependencie
 
 ------
 © 2019 Beijing I-Quotient Robot Technology Co., Ltd. All Rights Reserved
->>>>>>> eac8bd8493fb3ea565f0db3d3267e4ab09348bc8
