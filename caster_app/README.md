@@ -77,66 +77,26 @@ A stream of velocity commands meant for execution by a mobile base.
 
 #### 1.2.4 Parameters
 
-`~debug` (string, default: false)
-
-Debug mode
-
-`~robot_radius` (double, default: 0.27)
-
-Robot radius, this value determine the distance between dock front-side and docked-robot ahead(delta_d)
-
-delta_d = dock_distance - robot_radius
-
-`~map_frame` (string, default: map)
-
-Map frame
-
-`~odom_frame` (, default:  odom)
-
-Odom frame
-
-`~base_frame` (string, default: base_footprint)
-
-Robot base frame
-
-`~dock/speed`(double, default: 0.05)
-
-Move speed for docking
-
-`~dock/dock_distance`(double, default: 1.0)
-
-Distance between dock front-side and DockReady2 point 
-
-`~/dock/pose_x` (double, default: )
-
-DockReady point x
-
-`~/dock/pose_y` (double, default: )
-
-DockReady point y
-
-`~/dock/pose_z` (double, default: )
-
-DockReady point z
-
-`~/dock/orientation_x `(double, default: )
-
-DockReady point orientation_x
-
-`~/dock/orientation_y` (double, default: )
-
-DockReady point orientation_y
-
-`~/dock/orientation_z` (double, default: )
-
-DockReady point orientation_z
-
-`~/dock/orientation_w` (double, default: )
-
-DockReady point orientation_w
+| Name                 | Type   | Default        | Description                                                  |
+| -------------------- | ------ | -------------- | ------------------------------------------------------------ |
+| ~debug               | string | false          | debug mode                                                   |
+| ~robot_radius        | double | 0.27           | robot radius, this value determine the distance between dock front-side and docked-robot ahead(delta_d), delta_d = dock_distance - robot_radius |
+| ~base_frame          | String | base_footprint | base frame                                                   |
+| ~map_frame           | string | map            | map frame                                                    |
+| ~odom_fram           | string | odom           | odom frame                                                   |
+| ~dock/dock_distance  | double | 1.0            | distance between dock front-side and DockReady2 point        |
+| ~dock/dock_speed     | double | 0.05           | move speed for docking                                       |
+| ~/dock/pose_x        | double |                | DockReady point x                                            |
+| ~/dock/pose_y        | double |                | DockReady point y                                            |
+| ~/dock/pose_z        | double |                | DockReady point z                                            |
+| ~/dock/orientation_x | double |                | DockReady point orientation x                                |
+| ~/dock/orientation_y | double |                | DockReady point orientation y                                |
+| ~/dock/orientation_z | double |                | DockReady point orientation z                                |
+| ~/dock/orientation_w | double |                | DockReady point orientation w                                |
 
 ## 2 Launch files
 
 #### 2.1 caster_app.launch
 
 This launch file runs `dock_detect.py` and `dock_server.py` with specific params in `caster_app.yaml`
+
