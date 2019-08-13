@@ -16,9 +16,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>caster_viz</depend>
-  <depend>caster_teleop</depend>
-  <depend>caster_description</depend>
+  <exec_depend>caster_viz</exec_depend>
+  <exec_depend>caster_teleop</exec_depend>
+  <exec_depend>caster_description</exec_depend>
 
   <export>
     <metapackage/>
