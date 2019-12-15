@@ -1,4 +1,4 @@
-Deprecated， visit [caster_robot](https://github.com/I-Quotient-Robotics/caster_ros)
+**Deprecated, please use [caster_ros](https://github.com/I-Quotient-Robotics/caster_ros).**
 
 # Caster ROS
 
