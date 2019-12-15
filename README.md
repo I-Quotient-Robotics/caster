@@ -1,3 +1,5 @@
+Deprecated， visit [caster_robot](https://github.com/I-Quotient-Robotics/caster_ros)
+
 # Caster ROS
 
 <p align="center"><img src="robot.png" width="80%" /></p>
